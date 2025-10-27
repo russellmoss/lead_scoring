@@ -1,0 +1,89 @@
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+*.env
+
+# Discovery data files (contains sensitive financial advisor information)
+discovery_data/
+**/discovery_data/
+*.csv
+!sample_data.csv
+
+# BigQuery credentials and service account keys
+*.json
+service-account*.json
+credentials*.json
+!package.json
+!tsconfig.json
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Model artifacts and large files
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+*.model
+*.joblib
+
+# Data files (except sample data)
+*.parquet
+*.feather
+*.xlsx
+*.xls
+!sample_*.xlsx
+!sample_*.xls
+
+# MacOS specific
+__MACOSX/
+**/__MACOSX/
+
+# Backup files
+*.bak
+*.backup
+*~
