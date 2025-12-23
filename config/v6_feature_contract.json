@@ -1,0 +1,332 @@
+[
+  {
+    "name": "RepCRD",
+    "bq_type": "STRING",
+    "nullable": false
+  },
+  {
+    "name": "RIAFirmCRD",
+    "bq_type": "STRING",
+    "nullable": true
+  },
+  {
+    "name": "TotalAssetsInMillions",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "TotalAssets_PooledVehicles",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "TotalAssets_SeparatelyManagedAccounts",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "NumberClients_Individuals",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "NumberClients_HNWIndividuals",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "NumberClients_RetirementPlans",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "PercentClients_Individuals",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "PercentClients_HNWIndividuals",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "AssetsInMillions_MutualFunds",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "AssetsInMillions_PrivateFunds",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "AssetsInMillions_Equity_ExchangeTraded",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "PercentAssets_MutualFunds",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "PercentAssets_PrivateFunds",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "PercentAssets_Equity_ExchangeTraded",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "Number_IAReps",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "Number_BranchAdvisors",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "NumberFirmAssociations",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "NumberRIAFirmAssociations",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "AUMGrowthRate_1Year",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "AUMGrowthRate_5Year",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "DateBecameRep_NumberOfYears",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "DateOfHireAtCurrentFirm_NumberOfYears",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "Number_YearsPriorFirm1",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "Number_YearsPriorFirm2",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "Number_YearsPriorFirm3",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "Number_YearsPriorFirm4",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "AverageTenureAtPriorFirms",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "NumberOfPriorFirms",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "IsPrimaryRIAFirm",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "DuallyRegisteredBDRIARep",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_Series_7",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_Series_65",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_Series_66",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_Series_24",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_CFP",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_CFA",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_CIMA",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_AIF",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_Disclosure",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Is_BreakawayRep",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_Insurance_License",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Is_NonProducer",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Is_IndependentContractor",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Is_Owner",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Office_USPS_Certified",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Home_USPS_Certified",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_LinkedIn",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Home_MetropolitanArea",
+    "bq_type": "STRING",
+    "nullable": true
+  },
+  {
+    "name": "Branch_State",
+    "bq_type": "STRING",
+    "nullable": true
+  },
+  {
+    "name": "Home_State",
+    "bq_type": "STRING",
+    "nullable": true
+  },
+  {
+    "name": "Home_ZipCode",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "Branch_ZipCode",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "MilesToWork",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "SocialMedia_LinkedIn",
+    "bq_type": "STRING",
+    "nullable": true
+  },
+  {
+    "name": "CustodianAUM_Schwab",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "CustodianAUM_Fidelity_NationalFinancial",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "CustodianAUM_Pershing",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "CustodianAUM_TDAmeritrade",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "Has_Schwab_Relationship",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_Fidelity_Relationship",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_Pershing_Relationship",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Has_TDAmeritrade_Relationship",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "Number_RegisteredStates",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "snapshot_at",
+    "bq_type": "DATE",
+    "nullable": false
+  }
+]

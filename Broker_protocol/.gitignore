@@ -1,0 +1,174 @@
+# Broker Protocol Automation - Git Ignore File
+
+# ===== SENSITIVE FILES (NEVER COMMIT!) =====
+# Environment variables with secrets
+.env
+.env.local
+.env.*.local
+
+# Google Cloud credentials
+*.json
+service-account-*.json
+*-key.json
+credentials.json
+
+# ===== TEMPORARY FILES =====
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# ===== DATA FILES =====
+# Downloaded Excel files
+*.xlsx
+*.xls
+!TheBrokerProtocolMemberFirms122225.xlsx  # Keep sample file
+
+# Generated CSV files
+*_parsed.csv
+*_matched.csv
+*_latest.csv
+fintrx_firms*.csv
+broker_protocol_*.csv
+
+# Test data
+test_data/**/*.csv
+test_data/**/*.xlsx
+!test_data/.gitkeep  # Keep directory structure
+
+# Output files
+output/**
+temp/**
+data/**
+logs/**
+
+# But keep directory structure files
+!output/.gitkeep
+!temp/.gitkeep
+!data/.gitkeep
+!logs/.gitkeep
+
+# ===== IDE & EDITOR FILES =====
+# VS Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Cursor
+.cursor/
+
+# ===== OS FILES =====
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+
+# ===== TESTING =====
+# pytest
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# ===== LOGS =====
+*.log
+logs/*.log
+*.log.*
+
+# ===== BACKUPS =====
+*.bak
+*.backup
+*.old
+*.orig
+
+# ===== DOCUMENTATION BUILDS =====
+# Sphinx
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# MkDocs
+site/
+
+# ===== MISC =====
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints
+
+# Package files
+*.egg-info/
+dist/
+build/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Profiling data
+*.prof
+
+# ===== PROJECT SPECIFIC =====
+# N8N exports (may contain secrets)
+n8n_exports/*.json
+
+# Manual review files (may contain PII)
+manual_review_*.csv
+manual_review_*.xlsx
+
+# Database dumps (may be large)
+*.sql
+*.db
+*.sqlite
+
+# ===== KEEP THESE FILES =====
+# Always commit these important files
+!README.md
+!requirements.txt
+!config.py
+!.env.example
+!.gitignore
+!*.md
+!broker_protocol_parser.py
+!firm_matcher.py
+!broker_protocol_scrape.js
+
+# ===== NOTES =====
+# This .gitignore prevents committing:
+# 1. Sensitive credentials (service accounts, API keys)
+# 2. Large data files (Excel, CSV)
+# 3. Generated outputs
+# 4. System/IDE files
+# 5. Logs and temporary files
+#
+# But DOES commit:
+# - All Python source code
+# - Configuration templates (.env.example, not .env)
+# - Documentation files
+# - Sample data file (for reference)

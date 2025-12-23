@@ -1,0 +1,864 @@
+{
+  "feature_source": "savvy-gtm-analytics.LeadScoring.discovery_reps_current",
+  "exclusions": [
+    "RepCRD",
+    "processed_at",
+    "snapshot_as_of"
+  ],
+  "features": [
+    {
+      "name": "AUMGrowthRate_1Year",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AUMGrowthRate_5Year",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AUM_Per_BranchAdvisor",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AUM_Per_Client",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AUM_Per_IARep",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Accelerating_Growth",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AssetsInMillions_Equity_ExchangeTraded",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AssetsInMillions_HNWIndividuals",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AssetsInMillions_Individuals",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AssetsInMillions_MutualFunds",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "AssetsInMillions_PrivateFunds",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Branch_City",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Branch_County",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Branch_Latitude",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Branch_Longitude",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Branch_State",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Branch_ZipCode",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "BreakawayRep",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Brochure_Keywords",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Clients_per_BranchAdvisor",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Clients_per_IARep",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Custodian1",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Custodian2",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Custodian3",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Custodian4",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Custodian5",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "CustodianAUM_Fidelity_NationalFinancial",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "CustodianAUM_Pershing",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "CustodianAUM_Schwab",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "CustodianAUM_TDAmeritrade",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "CustomKeywords",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "DateBecameRep_NumberOfYears",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "calculable"
+    },
+    {
+      "name": "DateOfHireAtCurrentFirm_NumberOfYears",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "calculable"
+    },
+    {
+      "name": "DuallyRegisteredBDRIARep",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Education",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Email_BusinessType",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Email_PersonalType",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "FirmWebsite",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Firm_Stability_Score",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "FirstName",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Gender",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Growth_Momentum",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "HNW_Asset_Concentration",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "HNW_Client_Ratio",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_AIF",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Has_CFA",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Has_CFP",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Has_CIMA",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Has_Disclosure",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_ETF_Focus",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_Fidelity_Relationship",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_Mutual_Fund_Focus",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_Pershing_Relationship",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_Private_Funds",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_Scale",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_Schwab_Relationship",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Has_Series_24",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Has_Series_65",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Has_Series_66",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Has_Series_7",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Has_TDAmeritrade_Relationship",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Home_City",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_County",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_Latitude",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_Longitude",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_MetropolitanArea",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_MetropolitanArea_Chicago_Naperville_Elgin_IL_IN",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_MetropolitanArea_Dallas_Fort_Worth_Arlington_TX",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_MetropolitanArea_Los_Angeles_Long_Beach_Anaheim_CA",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_MetropolitanArea_Miami_Fort_Lauderdale_West_Palm_Beach_FL",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_MetropolitanArea_New_York_Newark_Jersey_City_NY_NJ",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_State",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Home_ZipCode",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Individual_Asset_Ratio",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "IsPrimaryRIAFirm",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Is_Boutique_Firm",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Is_Breakaway_Rep",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Is_Dually_Registered",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Is_Known_Non_Advisor",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Is_Large_Firm",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Is_New_To_Firm",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Is_Primary_RIA",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Is_Veteran_Advisor",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "KnownNonAdvisor",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "LastName",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Licenses",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Local_Advisor",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "MilesToWork",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Multi_Firm_Associations",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Multi_RIA_Relationships",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Notes",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "NumberClients_HNWIndividuals",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "NumberClients_Individuals",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "NumberClients_RetirementPlans",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "NumberFirmAssociations",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "NumberRIAFirmAssociations",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Number_BranchAdvisors",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Number_IAReps",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Number_Of_Prior_Firms",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "calculable"
+    },
+    {
+      "name": "Number_YearsPriorFirm1",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "calculable"
+    },
+    {
+      "name": "Number_YearsPriorFirm2",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "calculable"
+    },
+    {
+      "name": "Number_YearsPriorFirm3",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "calculable"
+    },
+    {
+      "name": "Number_YearsPriorFirm4",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "calculable"
+    },
+    {
+      "name": "PercentAssets_Equity_ExchangeTraded",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "PercentAssets_HNWIndividuals",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "PercentAssets_Individuals",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "PercentAssets_MutualFunds",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "PercentAssets_PrivateFunds",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "PercentClients_HNWIndividuals",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "PercentClients_Individuals",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "PersonalWebpage",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Positive_Growth_Trajectory",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "RIAFirmCRD",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "RIAFirmName",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "RegulatoryDisclosures",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Remote_Work_Indicator",
+      "dtype": "INT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "SocialMedia_LinkedIn",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "Title",
+      "dtype": "STRING",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "stable"
+    },
+    {
+      "name": "TotalAssetsInMillions",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "TotalAssets_PooledVehicles",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "TotalAssets_SeparatelyManagedAccounts",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "mutable"
+    },
+    {
+      "name": "Total_Prior_Firm_Years",
+      "dtype": "FLOAT64",
+      "nullable": true,
+      "expected_range": null,
+      "temporal_type": "calculable"
+    }
+  ]
+}

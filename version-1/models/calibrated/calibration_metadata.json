@@ -1,0 +1,23 @@
+{
+  "calibration_method": "isotonic",
+  "brier_score": 0.03836859593037002,
+  "isotonic_brier": 0.03836859593037002,
+  "platt_brier": 0.03929176838043465,
+  "isotonic_log_loss": 0.15846984821442042,
+  "platt_log_loss": 0.16436816223358727,
+  "n_calibration_samples": 1739,
+  "feature_names": [
+    "aum_growth_since_jan2024_pct",
+    "current_firm_tenure_months",
+    "days_in_gap",
+    "firm_aum_pit",
+    "firm_net_change_12mo",
+    "firm_rep_count_at_contact",
+    "industry_tenure_months",
+    "num_prior_firms",
+    "pit_mobility_tier_Highly Mobile",
+    "pit_mobility_tier_Mobile",
+    "pit_mobility_tier_Stable",
+    "pit_moves_3yr"
+  ]
+}

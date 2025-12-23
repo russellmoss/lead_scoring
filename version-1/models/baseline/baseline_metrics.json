@@ -1,0 +1,112 @@
+{
+  "cv_results": [
+    {
+      "fold": 1,
+      "train_auc_pr": 1.0,
+      "val_auc_pr": 0.02434711935480717,
+      "train_auc_roc": 1.0,
+      "val_auc_roc": 0.4849560513860717,
+      "train_size": 1360,
+      "val_size": 1355
+    },
+    {
+      "fold": 2,
+      "train_auc_pr": 0.975413424319268,
+      "val_auc_pr": 0.058169540217980015,
+      "train_auc_roc": 0.9995709740868349,
+      "val_auc_roc": 0.5999488752556237,
+      "train_size": 2715,
+      "val_size": 1355
+    },
+    {
+      "fold": 3,
+      "train_auc_pr": 0.9589812753444187,
+      "val_auc_pr": 0.07004974601944775,
+      "train_auc_roc": 0.9988980967337857,
+      "val_auc_roc": 0.6342854244558445,
+      "train_size": 4070,
+      "val_size": 1355
+    },
+    {
+      "fold": 4,
+      "train_auc_pr": 0.9557645513634629,
+      "val_auc_pr": 0.045524615783912065,
+      "train_auc_roc": 0.9984548745492647,
+      "val_auc_roc": 0.5823269140100823,
+      "train_size": 5425,
+      "val_size": 1355
+    },
+    {
+      "fold": 5,
+      "train_auc_pr": 0.9311245021018372,
+      "val_auc_pr": 0.03386881358252884,
+      "train_auc_roc": 0.9973253560886535,
+      "val_auc_roc": 0.6139508819803138,
+      "train_size": 6780,
+      "val_size": 1355
+    }
+  ],
+  "test_metrics": {
+    "test_auc_pr": 0.06309876213294649,
+    "test_auc_roc": 0.6320445986613823,
+    "baseline_rate": 0.041978148361127086,
+    "top_decile_rate": 0.06936416184971098,
+    "top_decile_lift": 1.652387362419827,
+    "lift_chart": [
+      {
+        "decile": 1,
+        "conversion_rate": 0.06936416184971098,
+        "n_samples": 173
+      },
+      {
+        "decile": 2,
+        "conversion_rate": 0.046242774566473986,
+        "n_samples": 173
+      },
+      {
+        "decile": 3,
+        "conversion_rate": 0.046242774566473986,
+        "n_samples": 173
+      },
+      {
+        "decile": 4,
+        "conversion_rate": 0.10404624277456648,
+        "n_samples": 173
+      },
+      {
+        "decile": 5,
+        "conversion_rate": 0.04046242774566474,
+        "n_samples": 173
+      },
+      {
+        "decile": 6,
+        "conversion_rate": 0.04046242774566474,
+        "n_samples": 173
+      },
+      {
+        "decile": 7,
+        "conversion_rate": 0.017341040462427744,
+        "n_samples": 173
+      },
+      {
+        "decile": 8,
+        "conversion_rate": 0.028901734104046242,
+        "n_samples": 173
+      },
+      {
+        "decile": 9,
+        "conversion_rate": 0.017341040462427744,
+        "n_samples": 173
+      },
+      {
+        "decile": 10,
+        "conversion_rate": 0.01098901098901099,
+        "n_samples": 182
+      }
+    ]
+  },
+  "scale_pos_weight": 33.76495726495727,
+  "n_features": 11,
+  "n_train": 8135,
+  "n_test": 1739
+}

@@ -1,0 +1,22 @@
+# Broker Protocol Automation - Python Dependencies
+# Install with: pip install -r requirements.txt --break-system-packages
+
+# Core data processing
+pandas>=2.0.0
+openpyxl>=3.1.0        # Excel file handling
+python-dateutil>=2.8.0  # Date parsing
+
+# Google Cloud
+google-cloud-bigquery>=3.11.0
+google-cloud-storage>=2.10.0  # Optional: for file backups
+
+# Fuzzy matching (used by firm_matcher.py)
+rapidfuzz>=3.0.0  # Fast fuzzy matching (optional, falls back to difflib if not available)
+# difflib is built-in, fallback if rapidfuzz not available
+
+# Testing (optional but recommended)
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Utilities
+python-dotenv>=1.0.0   # For managing environment variables

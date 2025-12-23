@@ -1,0 +1,12 @@
+{
+  "analysis_date": "2025-10-31",
+  "maturity_window_days": 43,
+  "metrics": {
+    "total_leads": 52625,
+    "labeled_leads": 37804,
+    "positive_leads": 1468,
+    "negative_leads": 36336,
+    "positive_rate": 3.88
+  },
+  "timestamp": "2025-12-21T18:56:48.458215"
+}

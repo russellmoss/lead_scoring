@@ -1,0 +1,84 @@
+Traceback (most recent call last):
+  File "C:\Users\russe\Documents\Lead Scoring\fix_shap.py", line 160, in <module>
+    }
+  File "C:\Users\russe\Documents\Lead Scoring\fix_shap.py", line 106, in main
+    parent_children = {}
+         ^^^^^^^^^^^^^^^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\shap\explainers\_permutation.py", line 73, in __call__
+    return super().__call__(
+           ~~~~~~~~~~~~~~~~^
+        *args,
+        ^^^^^^
+    ...<5 lines>...
+        silent=silent,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\shap\explainers\_permutation.py", line 100, in __call__
+    return super().__call__(
+           ~~~~~~~~~~~~~~~~^
+        *args,
+        ^^^^^^
+    ...<5 lines>...
+        silent=silent,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\shap\explainers\_explainer.py", line 364, in __call__
+    row_result = self.explain_row(
+        *row_args,
+    ...<6 lines>...
+        **kwargs,
+    )
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\shap\explainers\_permutation.py", line 162, in explain_row
+    outputs = fm(masks, zero_index=0, batch_size=batch_size)
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\shap\utils\_masked_model.py", line 57, in __call__
+    return self._delta_masking_call(masks, zero_index=zero_index, batch_size=batch_size)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\shap\utils\_masked_model.py", line 202, in _delta_masking_call
+    subset_masked_inputs = [arg[varying_rows.reshape(-1)] for arg in masked_inputs]
+                            ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\frame.py", line 4104, in __getitem__
+    return self._getitem_bool_array(key)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\frame.py", line 4166, in _getitem_bool_array
+    return self._take_with_is_copy(indexer, axis=0)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\generic.py", line 4175, in _take_with_is_copy
+    result = self.take(indices=indices, axis=axis)
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\generic.py", line 4155, in take
+    new_data = self._mgr.take(
+        indices,
+        axis=self._get_block_manager_axis(axis),
+        verify=True,
+    )
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\internals\managers.py", line 913, in take
+    return self.reindex_indexer(
+           ~~~~~~~~~~~~~~~~~~~~^
+        new_axis=new_labels,
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        copy=None,
+        ^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\internals\managers.py", line 707, in reindex_indexer
+    blk.take_nd(
+    ~~~~~~~~~~~^
+        indexer,
+        ^^^^^^^^
+    ...<3 lines>...
+        ),
+        ^^
+    )
+    ^
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\internals\blocks.py", line 1373, in take_nd
+    new_values = algos.take_nd(
+        values, indexer, axis=axis, allow_fill=allow_fill, fill_value=fill_value
+    )
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\array_algos\take.py", line 117, in take_nd
+    return _take_nd_ndarray(arr, indexer, axis, fill_value, allow_fill)
+  File "C:\Users\russe\Documents\Lead Scoring\.venv-shap-fix\Lib\site-packages\pandas\core\array_algos\take.py", line 162, in _take_nd_ndarray
+    func(arr, indexer, out, fill_value)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

@@ -1,0 +1,26 @@
+table_name,table_type
+Firm_historicals,BASE TABLE
+Historical_Disclosure_data,BASE TABLE
+affiliates_historicals,BASE TABLE
+contact_accolades_historicals,BASE TABLE
+contact_branch_data,BASE TABLE
+contact_broker_dealer_state_historicals,BASE TABLE
+contact_registered_employment_history,BASE TABLE
+contact_state_registrations_historicals,BASE TABLE
+custodians_historicals,BASE TABLE
+firm_accolades_historicals,BASE TABLE
+industry_exam_bd_historicals,BASE TABLE
+industry_exams_ia_historicals,BASE TABLE
+news_ps,BASE TABLE
+passions_and_interests,BASE TABLE
+private_fund_data,BASE TABLE
+private_wealth_teams_ps,BASE TABLE
+ria_contact_firm_relationships,BASE TABLE
+ria_contact_news,BASE TABLE
+ria_contacts_current,BASE TABLE
+ria_firms_current,BASE TABLE
+ria_investors_news,BASE TABLE
+ria_investors_private_fund_relationships,BASE TABLE
+schedule_d_section_A_historicals,BASE TABLE
+schedule_d_section_B_historicals,BASE TABLE
+wealth_team_members,BASE TABLE

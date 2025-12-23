@@ -1,0 +1,5 @@
+advisor_crd,first_name,last_name,company_name,firm_crd,lead_score,score_bucket,action_recommended,flight_risk_score,pit_restlessness_ratio,is_fresh_start,model_version
+3092973,Scott,Evans,Liberty Atlantic Advisors,119751,0.05932203307747841,Cold,Low priority,0.0,2.253968253968254,0.0,v2-boosted-20251221-b796831a
+2087726,Scott,Kleiman,LPL Financial LLC,127742,0.05932203307747841,Cold,Low priority,0.0,0.6264705882352941,0.0,v2-boosted-20251221-b796831a
+4312327,Christian,De Berardinis,Aperture Advisors Llc,116083,0.04580152779817581,Cold,Low priority,0.0,2.279816513761468,0.0,v2-boosted-20251221-b796831a
+315640,Donald,Maccallum,Investment Research Corporation,115494,0.02068965509533882,Cold,Low priority,0.0,1.5332225913621262,0.0,v2-boosted-20251221-b796831a

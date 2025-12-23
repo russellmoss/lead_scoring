@@ -1,0 +1,246 @@
+{
+  "diagnostic_date": "2025-12-21T05:31:00.162191",
+  "target_verification": {
+    "train_unique_values": 2,
+    "train_positive_rate": 0.036580206333192304,
+    "test_positive_rate": 0.04162451221274751
+  },
+  "cv_analysis": {
+    "fold_positive_rate_std": 0.09815818811598374,
+    "fold_info": [
+      {
+        "fold": 1,
+        "train_size": 5122,
+        "val_size": 5121,
+        "train_pos_rate": 0.0,
+        "val_pos_rate": 0.0,
+        "train_pos_count": "0",
+        "val_pos_count": "0"
+      },
+      {
+        "fold": 2,
+        "train_size": 10243,
+        "val_size": 5121,
+        "train_pos_rate": 0.0,
+        "val_pos_rate": 0.0,
+        "train_pos_count": "0",
+        "val_pos_count": "0"
+      },
+      {
+        "fold": 3,
+        "train_size": 15364,
+        "val_size": 5121,
+        "train_pos_rate": 0.0,
+        "val_pos_rate": 0.0,
+        "train_pos_count": "0",
+        "val_pos_count": "0"
+      },
+      {
+        "fold": 4,
+        "train_size": 20485,
+        "val_size": 5121,
+        "train_pos_rate": 0.0,
+        "val_pos_rate": 0.0,
+        "train_pos_count": "0",
+        "val_pos_count": "0"
+      },
+      {
+        "fold": 5,
+        "train_size": 25606,
+        "val_size": 5121,
+        "train_pos_rate": 0.0,
+        "val_pos_rate": 0.21948838117555164,
+        "train_pos_count": "0",
+        "val_pos_count": "1124"
+      }
+    ]
+  },
+  "model_comparison": {
+    "full_model_lift": 1.46,
+    "core_model_lift": 1.2552612481857763,
+    "v2_features_lift": 1.4019488653109342,
+    "target_v2_lift": 2.62
+  },
+  "feature_analysis": [
+    {
+      "feature": "industry_tenure_months",
+      "pos_mean": 64.86387900355872,
+      "neg_mean": 27.831841367428975,
+      "difference": 37.03203763612974,
+      "pct_difference": 133.05636931183275,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "num_prior_firms",
+      "pos_mean": 0.8451957295373665,
+      "neg_mean": 0.3103401682261933,
+      "difference": 0.5348555613111732,
+      "pct_difference": 172.34493503314096,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "current_firm_tenure_months",
+      "pos_mean": 13.874555160142348,
+      "neg_mean": 7.287943789480796,
+      "difference": 6.5866113706615526,
+      "pct_difference": 90.37681355567635,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "pit_moves_3yr",
+      "pos_mean": 0.7944839857651246,
+      "neg_mean": 0.44735330878627166,
+      "difference": 0.3471306769788529,
+      "pct_difference": 77.59653726953849,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "pit_avg_prior_tenure_months",
+      "pos_mean": 33.20653532956938,
+      "neg_mean": 38.276566319404175,
+      "difference": -5.070030989834798,
+      "pct_difference": -13.245783196766434,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "pit_restlessness_ratio",
+      "pos_mean": 1.678322500331126,
+      "neg_mean": 1.656690199931768,
+      "difference": 0.02163230039935793,
+      "pct_difference": 1.3057541114354916,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "firm_aum_pit",
+      "pos_mean": 198431070839.43622,
+      "neg_mean": 215170907248.1141,
+      "difference": -16739836408.677887,
+      "pct_difference": -7.77978613501645,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "log_firm_aum",
+      "pos_mean": 4.886154968326716,
+      "neg_mean": 1.9928108397277287,
+      "difference": 2.8933441285989874,
+      "pct_difference": 145.1891002858202,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "firm_net_change_12mo",
+      "pos_mean": -39.488434163701065,
+      "neg_mean": -14.742357193527683,
+      "difference": -24.746076970173384,
+      "pct_difference": 167.85698952564806,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "firm_departures_12mo",
+      "pos_mean": 75.66014234875445,
+      "neg_mean": 35.58943350336114,
+      "difference": 40.070708845393305,
+      "pct_difference": 112.59158941546215,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "firm_arrivals_12mo",
+      "pos_mean": 36.17170818505338,
+      "neg_mean": 20.84707630983346,
+      "difference": 15.324631875219922,
+      "pct_difference": 73.50974135395364,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "firm_stability_percentile",
+      "pos_mean": 48.89149435649748,
+      "neg_mean": 49.935771328935864,
+      "difference": -1.0442769724383822,
+      "pct_difference": -2.0912402965792656,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "firm_stability_tier",
+      "pos_mean": NaN,
+      "neg_mean": NaN,
+      "difference": "N/A (categorical)",
+      "pct_difference": "N/A",
+      "pos_mode": "Stable",
+      "neg_mode": "Stable"
+    },
+    {
+      "feature": "is_gender_missing",
+      "pos_mean": 0.0,
+      "neg_mean": 0.0,
+      "difference": 0.0,
+      "pct_difference": 0,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "is_linkedin_missing",
+      "pos_mean": 0.005338078291814947,
+      "neg_mean": 0.003783400331047529,
+      "difference": 0.0015546779607674178,
+      "pct_difference": 41.092081850533816,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "is_personal_email_missing",
+      "pos_mean": 0.16370106761565836,
+      "neg_mean": 0.05837246225044759,
+      "difference": 0.10532860536521077,
+      "pct_difference": 180.44228614735732,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "has_firm_aum",
+      "pos_mean": 0.21619217081850534,
+      "neg_mean": 0.08644394149241631,
+      "difference": 0.12974822932608904,
+      "pct_difference": 150.0952259765617,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "has_valid_virtual_snapshot",
+      "pos_mean": 0.23309608540925267,
+      "neg_mean": 0.095260615478161,
+      "difference": 0.13783546993109166,
+      "pct_difference": 144.69302894929456,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "flight_risk_score",
+      "pos_mean": 63.99288256227758,
+      "neg_mean": 8.453974259365605,
+      "difference": 55.53890830291198,
+      "pct_difference": 656.9562030708107,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    },
+    {
+      "feature": "is_fresh_start",
+      "pos_mean": 0.7998220640569395,
+      "neg_mean": 0.9124750869844273,
+      "difference": -0.1126530229274878,
+      "pct_difference": -12.345873825419892,
+      "pos_mode": NaN,
+      "neg_mode": NaN
+    }
+  ]
+}

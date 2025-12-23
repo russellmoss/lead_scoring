@@ -1,0 +1,73 @@
+{
+  "snapshot_dates": {
+    "2024_q1": "2024-03-31",
+    "2024_q2": null,
+    "2024_q3": "2024-07-07",
+    "2024_q4": "2024-10-06",
+    "2025_q1": "2025-01-05",
+    "2025_q2": "2025-04-06",
+    "2025_q3": "2025-07-06",
+    "2025_q4": "2025-10-05"
+  },
+  "notes": {
+    "2024_q1": "Uses latest date from Q1 2024 files (20240331 > 20240107)",
+    "2024_q2": "No file available for Q2 2024",
+    "2024_q3": "Single file for Q3 2024",
+    "2024_q4": "Single file for Q4 2024",
+    "2025_q1": "Single file for Q1 2025",
+    "2025_q2": "Single file for Q2 2025",
+    "2025_q3": "Single file for Q3 2025",
+    "2025_q4": "Single file for Q4 2025"
+  },
+  "file_mapping": {
+    "RIARepDataFeed_20240107.csv": {
+      "quarter": "2024_q1",
+      "date": "2024-01-07",
+      "used": false,
+      "reason": "Replaced by 20240331 (later date in same quarter)"
+    },
+    "RIARepDataFeed_20240331.csv": {
+      "quarter": "2024_q1",
+      "date": "2024-03-31",
+      "used": true,
+      "reason": "Latest snapshot in Q1 2024"
+    },
+    "RIARepDataFeed_20240707.csv": {
+      "quarter": "2024_q3",
+      "date": "2024-07-07",
+      "used": true,
+      "reason": "Q3 2024 snapshot"
+    },
+    "RIARepDataFeed_20241006.csv": {
+      "quarter": "2024_q4",
+      "date": "2024-10-06",
+      "used": true,
+      "reason": "Q4 2024 snapshot"
+    },
+    "RIARepDataFeed_20250105.csv": {
+      "quarter": "2025_q1",
+      "date": "2025-01-05",
+      "used": true,
+      "reason": "Q1 2025 snapshot"
+    },
+    "RIARepDataFeed_20250406.csv": {
+      "quarter": "2025_q2",
+      "date": "2025-04-06",
+      "used": true,
+      "reason": "Q2 2025 snapshot"
+    },
+    "RIARepDataFeed_20250706.csv": {
+      "quarter": "2025_q3",
+      "date": "2025-07-06",
+      "used": true,
+      "reason": "Q3 2025 snapshot"
+    },
+    "RIARepDataFeed_20251005.csv": {
+      "quarter": "2025_q4",
+      "date": "2025-10-05",
+      "used": true,
+      "reason": "Q4 2025 snapshot"
+    }
+  }
+}
+

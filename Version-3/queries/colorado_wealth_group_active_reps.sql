@@ -1,0 +1,154 @@
+-- ============================================================================
+-- QUERY 2: The Colorado Wealth Group, LLC - Active Producing Reps
+-- CRD Number: 310024
+-- ============================================================================
+-- This query retrieves all active producing advisors from ria_contacts_current
+-- who are currently associated with The Colorado Wealth Group, LLC
+-- 
+-- Note: Uses PRIMARY_FIRM = 310024 to get current firm association
+-- Also checks PRIMARY_RIA and LATEST_REGISTERED_EMPLOYMENT_COMPANY_CRD_ID as alternatives
+-- ============================================================================
+
+SELECT 
+    -- Contact Identification
+    RIA_CONTACT_CRD_ID,
+    ID,
+    RIA_CONTACT_PREFERRED_NAME,
+    CONTACT_FIRST_NAME,
+    RIA_CONTACT_FIRST_NAME_OTHER,
+    CONTACT_LAST_NAME,
+    CONTACT_SUFFIX_NAME,
+    GENDER,
+    
+    -- Contact Information
+    EMAIL,
+    ADDITIONAL_EMAIL,
+    PERSONAL_EMAIL_ADDRESS,
+    MOBILE_PHONE_NUMBER,
+    OFFICE_PHONE_NUMBER,
+    ADDITIONAL_PHONE_NUMBER,
+    LINKEDIN_PROFILE_URL,
+    FINTRX_URL,
+    
+    -- Professional Information
+    TITLE_NAME,
+    CONTACT_BIO,
+    REP_TYPE,
+    ENTITY_TYPE,
+    PRODUCING_ADVISOR,
+    ACTIVE,
+    
+    -- Licenses and Registrations
+    REP_LICENSES,
+    INDUSTRY_EXAMS,
+    RIA_REGISTERED_LOCATIONS,
+    BD_REGISTERED_LOCATIONS,
+    CONTACT_REGULATORY_ORGANIZATIONS,
+    
+    -- Experience and Tenure
+    INDUSTRY_TENURE_MONTHS,
+    PRIMARY_FIRM_START_DATE,
+    LATEST_REGISTERED_EMPLOYMENT_START_DATE,
+    LATEST_REGISTERED_EMPLOYMENT_END_DATE,
+    
+    -- Firm Association
+    PRIMARY_FIRM,
+    PRIMARY_FIRM_NAME,
+    PRIMARY_RIA,
+    PRIMARY_BD,
+    LATEST_REGISTERED_EMPLOYMENT_COMPANY_CRD_ID,
+    LATEST_REGISTERED_EMPLOYMENT_COMPANY,
+    LATEST_REGISTERED_EMPLOYMENT_CITY,
+    LATEST_REGISTERED_EMPLOYMENT_STATE,
+    
+    -- Ownership and Role
+    CONTACT_OWNERSHIP_PERCENTAGE,
+    INVESTMENT_COMMITTEE_MEMBER,
+    CONTACT_ROLES,
+    CONTACT_SKILLS_AND_EXPERIENCE,
+    
+    -- AUM and Production
+    REP_AUM,
+    
+    -- Location Information
+    PRIMARY_LOCATION_STREET_1,
+    PRIMARY_LOCATION_STREET_2,
+    PRIMARY_LOCATION_CITY,
+    PRIMARY_LOCATION_STATE,
+    PRIMARY_LOCATION_POSTAL,
+    PRIMARY_LOCATION_POSTAL_FULL,
+    PRIMARY_LOCATION_COUNTRY,
+    PRIMARY_LOCATION_PRIVATE_RESIDENCE,
+    
+    -- Branch Information
+    BRANCH_CITIES,
+    BRANCH_STATES,
+    BRANCH_STREETS,
+    BRANCH_POSTAL_CODES,
+    BRANCH_COUNTRIES,
+    BRANCH_COUNTIES,
+    ALL_BRANCH_US_REGIONS,
+    FINTRX_BRANCH_ID,
+    
+    -- Firm HQ Information
+    PRIMARY_FIRM_HQ_ADDRESS_1,
+    PRIMARY_FIRM_HQ_ADDRESS_2,
+    PRIMARY_FIRM_HQ_CITY,
+    PRIMARY_FIRM_HQ_STATE,
+    PRIMARY_FIRM_HQ_POSTAL,
+    PRIMARY_FIRM_HQ_COUNTRY,
+    PRIMARY_FIRM_CLASSIFICATION,
+    PRIMARY_FIRM_TOTAL_AUM,
+    PRIMARY_FIRM_EMPLOYEE_COUNT,
+    
+    -- RIA Investor Information
+    RIA_INVESTOR_CRD_ID,
+    RIA_INVESTOR_NAME,
+    
+    -- Previous Employment
+    PREVIOUS_REGISTRATION_COMPANY_CRD_IDS,
+    
+    -- Education
+    UNIVERSITY_NAMES,
+    
+    -- Regulatory Disclosures
+    CONTACT_HAS_DISCLOSED_BANKRUPT,
+    CONTACT_HAS_DISCLOSED_BOND,
+    CONTACT_HAS_DISCLOSED_CIVIL_EVENT,
+    CONTACT_HAS_DISCLOSED_CRIMINAL,
+    CONTACT_HAS_DISCLOSED_CUSTOMER_DISPUTE,
+    CONTACT_HAS_DISCLOSED_INVESTIGATION,
+    CONTACT_HAS_DISCLOSED_JUDGMENT_OR_LIEN,
+    CONTACT_HAS_DISCLOSED_REGULATORY_EVENT,
+    CONTACT_HAS_DISCLOSED_TERMINATION,
+    SEC_FILE_URL,
+    
+    -- Additional Information
+    PASSIONS_AND_INTERESTS,
+    ACCOLADES,
+    NEWS_INFO,
+    AGE_RANGE,
+    
+    -- Wealth Team Associations
+    ASSOCIATED_WEALTH_TEAM_IDS,
+    ASSOCIATED_WEALTH_TEAM_NAMES,
+    WEALTH_TEAM_1,
+    WEALTH_TEAM_ID_1,
+    WEALTH_TEAM_2,
+    WEALTH_TEAM_ID_2,
+    WEALTH_TEAM_3,
+    WEALTH_TEAM_ID_3,
+    
+    -- Metadata
+    LATEST_UPDATE
+
+FROM `savvy-gtm-analytics.FinTrx_data_CA.ria_contacts_current`
+WHERE (
+    PRIMARY_FIRM = 310024  -- The Colorado Wealth Group, LLC CRD (primary firm)
+    OR SAFE_CAST(PRIMARY_RIA AS INT64) = 310024  -- Or primary RIA matches
+    OR SAFE_CAST(LATEST_REGISTERED_EMPLOYMENT_COMPANY_CRD_ID AS INT64) = 310024  -- Or latest employment matches
+)
+  AND PRODUCING_ADVISOR = TRUE  -- Only producing advisors
+  AND ACTIVE = TRUE  -- Only active contacts
+ORDER BY CONTACT_LAST_NAME, CONTACT_FIRST_NAME
+

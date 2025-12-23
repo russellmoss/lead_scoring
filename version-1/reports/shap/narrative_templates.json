@@ -1,0 +1,39 @@
+{
+  "high_mobility": {
+    "template": "This advisor has {moves} firm changes in the past 3 years, indicating high mobility and openness to new opportunities.",
+    "features": [
+      "pit_moves_3yr"
+    ]
+  },
+  "employment_gap": {
+    "template": "This advisor is currently in an employment transition period ({days} days since last position ended), making them more receptive to outreach.",
+    "features": [
+      "days_in_gap"
+    ]
+  },
+  "short_tenure": {
+    "template": "This advisor has been at their current firm for only {tenure} months, suggesting they may be open to exploring new opportunities.",
+    "features": [
+      "current_firm_tenure_months"
+    ]
+  },
+  "firm_bleeding": {
+    "template": "This advisor's firm has lost {net_change} advisors in the past 12 months, indicating potential instability and opportunity.",
+    "features": [
+      "firm_net_change_12mo"
+    ]
+  },
+  "high_mobility_tier": {
+    "template": "This advisor is classified as '{tier}', indicating a pattern of frequent firm changes and high mobility.",
+    "features": [
+      "pit_mobility_tier_Highly Mobile",
+      "pit_mobility_tier_Mobile"
+    ]
+  },
+  "firm_growth": {
+    "template": "This advisor's firm has shown {growth}% AUM growth since January 2024, indicating a stable and growing organization.",
+    "features": [
+      "aum_growth_since_jan2024_pct"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "model_version": "v3-boosted-20251221-30c0ec2d",
+  "training_date": "2025-12-21T05:37:27.404814",
+  "train_samples": 30727,
+  "test_samples": 6919,
+  "n_features": 20,
+  "scale_pos_weight": 26.337188612099645,
+  "optuna_trials": 50,
+  "cv_fix_applied": true,
+  "cv_score_std": 0.0064439649252791345,
+  "best_cv_auc_pr": 0.08140950097359752,
+  "test_auc_roc": 0.5808329772616833,
+  "test_auc_pr": 0.05688278742583285,
+  "top_decile_lift": 1.501519097222222,
+  "top_decile_rate": 0.0625,
+  "baseline_rate": 0.04162451221274751
+}

@@ -1,0 +1,13 @@
+feature,mean_abs_shap,rank
+current_firm_tenure_months,0.15052249225830128,1
+days_in_gap,0.08637352186121805,2
+firm_net_change_12mo,0.05168132720351253,3
+firm_rep_count_at_contact,0.04914883065748105,4
+industry_tenure_months,0.044946463321254744,5
+firm_aum_pit,0.03842122486485634,6
+num_prior_firms,0.028553978932561924,7
+aum_growth_since_jan2024_pct,0.02620729493098296,8
+pit_moves_3yr,0.011418753094187134,9
+pit_mobility_tier_Stable,0.008841824025352704,10
+pit_mobility_tier_Highly Mobile,0.0023187394947447675,11
+pit_mobility_tier_Mobile,0.001862995850287545,12

@@ -1,0 +1,14 @@
+{
+  "model_version": "v3-v2features-20251221-8263878a",
+  "training_date": "2025-12-21T05:50:35.989076",
+  "train_samples": 30727,
+  "test_samples": 6919,
+  "n_features": 24,
+  "test_auc_roc": 0.5803260987952211,
+  "test_auc_pr": 0.05511536852742194,
+  "top_decile_lift": 1.4234053869621064,
+  "baseline_rate": 0.04162451221274751,
+  "top_decile_rate": 0.059248554913294796,
+  "mobility_tiers_added": true,
+  "sparsity_handling_added": true
+}

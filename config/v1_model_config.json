@@ -1,0 +1,11 @@
+{
+  "global_seed": 42,
+  "label_window_days": 30,
+  "cv_folds": 5,
+  "cv_gap_days": 30,
+  "evaluation_metric": "aucpr",
+  "ship_threshold_aucpr": 0.35,
+  "ship_threshold_precision_at_10pct": 0.15,
+  "training_data_policy": "hybrid_stable_mutable"
+}
+

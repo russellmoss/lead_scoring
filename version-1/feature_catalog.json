@@ -1,0 +1,251 @@
+{
+  "features": [
+    {
+      "name": "lead_id",
+      "data_type": "STRING",
+      "source_tables": [
+        "SavvyGTMData.Lead"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "none",
+      "business_logic": "Salesforce Lead ID - primary identifier",
+      "null_handling": "Required - no nulls",
+      "leakage_risk": "LOW",
+      "category": "identifier",
+      "is_model_feature": false,
+      "notes": null
+    },
+    {
+      "name": "advisor_crd",
+      "data_type": "INT64",
+      "source_tables": [
+        "SavvyGTMData.Lead"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "none",
+      "business_logic": "Advisor CRD number - identifier",
+      "null_handling": "Required - no nulls",
+      "leakage_risk": "LOW",
+      "category": "identifier",
+      "is_model_feature": false,
+      "notes": null
+    },
+    {
+      "name": "contacted_date",
+      "data_type": "DATE",
+      "source_tables": [
+        "SavvyGTMData.Lead"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "none",
+      "business_logic": "Date lead entered 'Contacting' stage - temporal anchor",
+      "null_handling": "Required - no nulls",
+      "leakage_risk": "LOW",
+      "category": "identifier",
+      "is_model_feature": false,
+      "notes": null
+    },
+    {
+      "name": "firm_crd_at_contact",
+      "data_type": "INT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "none",
+      "business_logic": "Firm CRD at contacted_date (Gap Tolerant - Last Known Value)",
+      "null_handling": "Required - no nulls",
+      "leakage_risk": "LOW",
+      "category": "identifier",
+      "is_model_feature": false,
+      "notes": null
+    },
+    {
+      "name": "days_in_gap",
+      "data_type": "INT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "positive",
+      "business_logic": "Days between job end date and contacted_date. 0 = no gap (active employment). Positive = advisor in employment gap. Higher values may indicate transition period = opportunity.",
+      "null_handling": "Default to 0",
+      "leakage_risk": "LOW",
+      "category": "gap_tolerant",
+      "is_model_feature": true,
+      "notes": "NEW: Gap-tolerant logic recovers ~63% of leads. This feature captures employment transition periods."
+    },
+    {
+      "name": "industry_tenure_months",
+      "data_type": "INT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "nonlinear",
+      "business_logic": "Total months in industry calculated from employment history end dates. Very long tenure may indicate less mobility.",
+      "null_handling": "Impute with median, create indicator for missing",
+      "leakage_risk": "LOW",
+      "category": "advisor_experience",
+      "is_model_feature": true,
+      "notes": null
+    },
+    {
+      "name": "num_prior_firms",
+      "data_type": "INT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "positive",
+      "business_logic": "Count of firms worked at before current. Higher mobility may indicate openness to change.",
+      "null_handling": "Default to 0",
+      "leakage_risk": "LOW",
+      "category": "advisor_mobility",
+      "is_model_feature": true,
+      "notes": null
+    },
+    {
+      "name": "current_firm_tenure_months",
+      "data_type": "INT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "negative",
+      "business_logic": "Months at current firm as of contact. Very long tenure may indicate low mobility. For gap cases, represents tenure at last known firm.",
+      "null_handling": "Impute with 0, flag as missing",
+      "leakage_risk": "LOW",
+      "category": "advisor_stability",
+      "is_model_feature": true,
+      "notes": null
+    },
+    {
+      "name": "pit_moves_3yr",
+      "data_type": "INT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "positive",
+      "business_logic": "Count of firm changes in 36 months prior to contact. VALIDATED: Advisors with 3+ moves have 11% conversion vs 3% baseline (3.8x lift). Top predictor alongside Firm Net Change.",
+      "null_handling": "Default to 0",
+      "leakage_risk": "LOW",
+      "category": "advisor_mobility",
+      "is_model_feature": true,
+      "notes": "HIGH PRIORITY SIGNAL - Validated in Rep Mobility analysis"
+    },
+    {
+      "name": "pit_mobility_tier",
+      "data_type": "STRING",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "nonlinear",
+      "business_logic": "Categorical mobility classification: 'Highly Mobile' (3+ moves in 3yr, 11% conversion), 'Mobile' (2 moves), 'Average' (1 move), 'Stable' (0 moves). VALIDATED: Highly Mobile tier has 3.8x lift over baseline.",
+      "null_handling": "Assign 'Unknown' category",
+      "leakage_risk": "LOW",
+      "category": "advisor_mobility",
+      "is_model_feature": true,
+      "notes": "HIGH PRIORITY SIGNAL - Categorical version of pit_moves_3yr. One-hot encode for model."
+    },
+    {
+      "name": "firm_aum_pit",
+      "data_type": "INT64",
+      "source_tables": [
+        "Firm_historicals"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "nonlinear",
+      "business_logic": "Firm AUM as of pit_month (month before contacted_date). Large firms may be harder to recruit from, but also have more resources.",
+      "null_handling": "Impute with median, create indicator",
+      "leakage_risk": "LOW",
+      "category": "firm_size",
+      "is_model_feature": true,
+      "notes": null
+    },
+    {
+      "name": "firm_rep_count_at_contact",
+      "data_type": "INT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "nonlinear",
+      "business_logic": "Number of advisors at firm as of contacted_date, calculated from employment history. Larger firms may have more turnover opportunities.",
+      "null_handling": "Impute with median",
+      "leakage_risk": "LOW",
+      "category": "firm_size",
+      "is_model_feature": true,
+      "notes": null
+    },
+    {
+      "name": "aum_growth_since_jan2024_pct",
+      "data_type": "FLOAT64",
+      "source_tables": [
+        "Firm_historicals"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "negative",
+      "business_logic": "AUM growth from Jan 2024 baseline to pit_month. Declining AUM may indicate distress = opportunity. **Note:** Due to limited history (Jan 2024+), this replaces the 12-month growth metric.",
+      "null_handling": "Impute with 0 (no growth)",
+      "leakage_risk": "LOW",
+      "category": "firm_growth",
+      "is_model_feature": true,
+      "notes": "Replaces aum_growth_12mo_pct due to limited historical data"
+    },
+    {
+      "name": "firm_net_change_12mo",
+      "data_type": "INT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "negative",
+      "business_logic": "Net change in advisors at firm (arrivals - departures) in 12 months before contact. Negative = bleeding talent = opportunity. VALIDATED: Most predictive feature alongside pit_moves_3yr.",
+      "null_handling": "Impute with 0",
+      "leakage_risk": "LOW",
+      "category": "firm_stability",
+      "is_model_feature": true,
+      "notes": "HIGH PRIORITY SIGNAL - Empirically validated as top predictor"
+    },
+    {
+      "name": "firm_stability_score",
+      "data_type": "FLOAT64",
+      "source_tables": [
+        "contact_registered_employment_history"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "negative",
+      "business_logic": "Derived stability score: 50 + (net_change_12mo * 3.5), clamped to 0-100. Lower scores indicate more instability = higher opportunity. Empirically validated formula.",
+      "null_handling": "Impute with 50 (neutral)",
+      "leakage_risk": "LOW",
+      "category": "firm_stability",
+      "is_model_feature": true,
+      "notes": "Derived from firm_net_change_12mo using validated formula"
+    },
+    {
+      "name": "target",
+      "data_type": "INT64",
+      "source_tables": [
+        "SavvyGTMData.Lead"
+      ],
+      "pit_status": "FULL_PIT",
+      "expected_direction": "none",
+      "business_logic": "Binary target: 1 = converted to MQL within 30 days, 0 = mature lead never converted. NULL = right-censored (excluded from training).",
+      "null_handling": "Exclude NULLs from training",
+      "leakage_risk": "LOW",
+      "category": "target",
+      "is_model_feature": false,
+      "notes": null
+    }
+  ],
+  "metadata": {
+    "total_features": 11,
+    "gap_tolerant_features": 1,
+    "high_priority_signals": 3,
+    "version": "1.1",
+    "date_created": "2024-12-19"
+  }
+}

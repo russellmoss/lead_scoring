@@ -1,0 +1,27 @@
+{
+  "summary": {
+    "total_features": 14,
+    "high_vif_count": 0,
+    "moderate_vif_count": 0,
+    "high_correlation_pairs": 0,
+    "recommended_removals": 0
+  },
+  "vif_results": [
+    {
+      "feature": "aum_growth_since_jan2024_pct",
+      "vif": 1.22870727419655,
+      "vif_category": "LOW"
+    },
+    {
+      "feature": "firm_stability_score",
+      "vif": 1.2287072741965472,
+      "vif_category": "LOW"
+    }
+  ],
+  "high_correlations": [],
+  "recommendations": [],
+  "protected_features": [
+    "pit_moves_3yr",
+    "firm_net_change_12mo"
+  ]
+}

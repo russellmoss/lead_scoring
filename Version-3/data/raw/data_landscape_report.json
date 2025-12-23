@@ -1,0 +1,316 @@
+{
+  "fintrx_tables": [
+    {
+      "table_name": "Firm_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "Historical_Disclosure_data",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "affiliates_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "contact_accolades_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "contact_branch_data",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "contact_broker_dealer_state_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "contact_registered_employment_history",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "contact_state_registrations_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "custodians_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "firm_accolades_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "industry_exam_bd_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "industry_exams_ia_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "news_ps",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "passions_and_interests",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "private_fund_data",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "private_wealth_teams_ps",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "ria_contact_firm_relationships",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "ria_contact_news",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "ria_contacts_current",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "ria_firms_current",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "ria_investors_news",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "ria_investors_private_fund_relationships",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "schedule_d_section_A_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "schedule_d_section_B_historicals",
+      "table_type": "BASE TABLE"
+    },
+    {
+      "table_name": "wealth_team_members",
+      "table_type": "BASE TABLE"
+    }
+  ],
+  "lead_funnel": {
+    "total_leads": 76859,
+    "contacted": 52626,
+    "mql": 2894,
+    "converted": 1337,
+    "earliest_lead": "2023-04-03 14:45:24+00:00",
+    "latest_lead": "2025-12-19 15:50:04+00:00",
+    "contacted_to_mql_rate": 5.5,
+    "mql_to_sql_rate": 46.2
+  },
+  "crd_match_rate": {
+    "total_lead_crds": 52623,
+    "matched_crds": 50370,
+    "match_rate_pct": 95.72
+  },
+  "firm_historicals_coverage": [
+    {
+      "YEAR": 2024,
+      "MONTH": 1,
+      "unique_firms": 39229,
+      "total_rows": 39229,
+      "firms_with_aum": 36213,
+      "aum_coverage_pct": 92.31
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 2,
+      "unique_firms": 39300,
+      "total_rows": 39300,
+      "firms_with_aum": 36302,
+      "aum_coverage_pct": 92.37
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 3,
+      "unique_firms": 39425,
+      "total_rows": 39425,
+      "firms_with_aum": 36451,
+      "aum_coverage_pct": 92.46
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 4,
+      "unique_firms": 39515,
+      "total_rows": 39515,
+      "firms_with_aum": 36538,
+      "aum_coverage_pct": 92.47
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 5,
+      "unique_firms": 39600,
+      "total_rows": 39600,
+      "firms_with_aum": 36629,
+      "aum_coverage_pct": 92.5
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 6,
+      "unique_firms": 39776,
+      "total_rows": 39776,
+      "firms_with_aum": 36802,
+      "aum_coverage_pct": 92.52
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 7,
+      "unique_firms": 39837,
+      "total_rows": 39837,
+      "firms_with_aum": 36869,
+      "aum_coverage_pct": 92.55
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 8,
+      "unique_firms": 39971,
+      "total_rows": 39971,
+      "firms_with_aum": 37009,
+      "aum_coverage_pct": 92.59
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 9,
+      "unique_firms": 40117,
+      "total_rows": 40117,
+      "firms_with_aum": 37169,
+      "aum_coverage_pct": 92.65
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 10,
+      "unique_firms": 40265,
+      "total_rows": 40265,
+      "firms_with_aum": 37317,
+      "aum_coverage_pct": 92.68
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 11,
+      "unique_firms": 40333,
+      "total_rows": 40333,
+      "firms_with_aum": 37392,
+      "aum_coverage_pct": 92.71
+    },
+    {
+      "YEAR": 2024,
+      "MONTH": 12,
+      "unique_firms": 40387,
+      "total_rows": 40387,
+      "firms_with_aum": 37453,
+      "aum_coverage_pct": 92.74
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 1,
+      "unique_firms": 39734,
+      "total_rows": 39734,
+      "firms_with_aum": 36806,
+      "aum_coverage_pct": 92.63
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 2,
+      "unique_firms": 40200,
+      "total_rows": 40200,
+      "firms_with_aum": 37260,
+      "aum_coverage_pct": 92.69
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 3,
+      "unique_firms": 40050,
+      "total_rows": 40050,
+      "firms_with_aum": 37178,
+      "aum_coverage_pct": 92.83
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 4,
+      "unique_firms": 40141,
+      "total_rows": 40141,
+      "firms_with_aum": 37271,
+      "aum_coverage_pct": 92.85
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 5,
+      "unique_firms": 40222,
+      "total_rows": 40222,
+      "firms_with_aum": 37353,
+      "aum_coverage_pct": 92.87
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 6,
+      "unique_firms": 40395,
+      "total_rows": 40395,
+      "firms_with_aum": 37524,
+      "aum_coverage_pct": 92.89
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 7,
+      "unique_firms": 40477,
+      "total_rows": 40477,
+      "firms_with_aum": 37607,
+      "aum_coverage_pct": 92.91
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 8,
+      "unique_firms": 40725,
+      "total_rows": 40725,
+      "firms_with_aum": 37863,
+      "aum_coverage_pct": 92.97
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 9,
+      "unique_firms": 40795,
+      "total_rows": 40795,
+      "firms_with_aum": 37938,
+      "aum_coverage_pct": 93.0
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 10,
+      "unique_firms": 40869,
+      "total_rows": 40869,
+      "firms_with_aum": 38019,
+      "aum_coverage_pct": 93.03
+    },
+    {
+      "YEAR": 2025,
+      "MONTH": 11,
+      "unique_firms": 45349,
+      "total_rows": 45349,
+      "firms_with_aum": 42504,
+      "aum_coverage_pct": 93.73
+    }
+  ],
+  "employment_history_coverage": {
+    "total_records": 2204074,
+    "unique_reps": 456647,
+    "unique_firms": 33807,
+    "earliest_start": "1942-02-19",
+    "latest_end": "2029-12-31",
+    "current_employments": 4,
+    "current_employment_pct": 0.0
+  },
+  "timestamp": "2025-12-21T18:54:29.804917",
+  "location": "northamerica-northeast2"
+}

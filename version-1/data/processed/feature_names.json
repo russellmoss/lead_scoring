@@ -1,0 +1,37 @@
+{
+  "feature_names": [
+    "aum_growth_since_jan2024_pct",
+    "current_firm_tenure_months",
+    "days_in_gap",
+    "firm_aum_pit",
+    "firm_net_change_12mo",
+    "firm_rep_count_at_contact",
+    "firm_stability_score",
+    "industry_tenure_months",
+    "num_prior_firms",
+    "pit_mobility_tier_Average",
+    "pit_mobility_tier_Highly Mobile",
+    "pit_mobility_tier_Mobile",
+    "pit_mobility_tier_Stable",
+    "pit_moves_3yr"
+  ],
+  "numeric_features": [
+    "days_in_gap",
+    "industry_tenure_months",
+    "num_prior_firms",
+    "current_firm_tenure_months",
+    "firm_aum_pit",
+    "firm_rep_count_at_contact",
+    "aum_growth_since_jan2024_pct",
+    "pit_moves_3yr",
+    "firm_net_change_12mo",
+    "firm_stability_score"
+  ],
+  "categorical_features": [
+    "pit_mobility_tier"
+  ],
+  "n_features": 14,
+  "n_train": 8135,
+  "n_val": 0,
+  "n_test": 1739
+}

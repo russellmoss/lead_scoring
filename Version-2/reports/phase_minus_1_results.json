@@ -1,0 +1,36 @@
+{
+  "firm_historicals": {
+    "earliest_snapshot": "2024-01-01",
+    "latest_snapshot": "2025-11-01",
+    "total_months": 23
+  },
+  "lead_volumes": [
+    {
+      "year": 2023,
+      "leads": 52,
+      "mqls": 18,
+      "conversion_pct": 34.62
+    },
+    {
+      "year": 2024,
+      "leads": 18337,
+      "mqls": 726,
+      "conversion_pct": 3.96
+    },
+    {
+      "year": 2025,
+      "leads": 38645,
+      "mqls": 1687,
+      "conversion_pct": 4.37
+    }
+  ],
+  "most_recent_lead": {
+    "most_recent": "2025-12-19",
+    "days_ago": 2
+  },
+  "crd_match_rate": {
+    "total_leads": 76845,
+    "matched": 72261,
+    "match_pct": 94.03
+  }
+}

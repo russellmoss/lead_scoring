@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-12-21T19:22:39.084199",
+  "training_period": {
+    "start": "2024-02-01",
+    "end": "2025-07-03",
+    "results": [
+      {
+        "score_tier": "TIER_1_PRIME_MOVER",
+        "n_leads": 163,
+        "n_converted": 22,
+        "conversion_rate_pct": 13.5,
+        "expected_lift": 3.4,
+        "actual_lift": 3.69
+      },
+      {
+        "score_tier": "TIER_2_MODERATE_BLEEDER",
+        "n_leads": 250,
+        "n_converted": 21,
+        "conversion_rate_pct": 8.4,
+        "expected_lift": 2.77,
+        "actual_lift": 2.3
+      },
+      {
+        "score_tier": "TIER_3_EXPERIENCED_MOVER",
+        "n_leads": 358,
+        "n_converted": 39,
+        "conversion_rate_pct": 10.89,
+        "expected_lift": 2.65,
+        "actual_lift": 2.98
+      },
+      {
+        "score_tier": "TIER_4_HEAVY_BLEEDER",
+        "n_leads": 1033,
+        "n_converted": 88,
+        "conversion_rate_pct": 8.52,
+        "expected_lift": 2.28,
+        "actual_lift": 2.33
+      },
+      {
+        "score_tier": "STANDARD",
+        "n_leads": 28923,
+        "n_converted": 954,
+        "conversion_rate_pct": 3.3,
+        "expected_lift": 1.0,
+        "actual_lift": 0.9
+      }
+    ]
+  },
+  "test_period": {
+    "start": "2025-08-02",
+    "end": "2025-10-01",
+    "results": [
+      {
+        "score_tier": "TIER_1_PRIME_MOVER",
+        "n_leads": 10,
+        "n_converted": 2,
+        "conversion_rate_pct": 20.0,
+        "expected_lift": 3.4,
+        "actual_lift": 4.8
+      },
+      {
+        "score_tier": "TIER_2_MODERATE_BLEEDER",
+        "n_leads": 18,
+        "n_converted": 0,
+        "conversion_rate_pct": 0.0,
+        "expected_lift": 2.77,
+        "actual_lift": 0.0
+      },
+      {
+        "score_tier": "TIER_3_EXPERIENCED_MOVER",
+        "n_leads": 29,
+        "n_converted": 2,
+        "conversion_rate_pct": 6.9,
+        "expected_lift": 2.65,
+        "actual_lift": 1.66
+      },
+      {
+        "score_tier": "TIER_4_HEAVY_BLEEDER",
+        "n_leads": 66,
+        "n_converted": 2,
+        "conversion_rate_pct": 3.03,
+        "expected_lift": 2.28,
+        "actual_lift": 0.73
+      },
+      {
+        "score_tier": "STANDARD",
+        "n_leads": 6796,
+        "n_converted": 282,
+        "conversion_rate_pct": 4.15,
+        "expected_lift": 1.0,
+        "actual_lift": 1.0
+      }
+    ]
+  },
+  "summary": {
+    "train_total_leads": 30727,
+    "test_total_leads": 6919,
+    "train_priority_count": 1804,
+    "train_priority_rate": 9.42350332594235,
+    "test_priority_count": 123,
+    "test_priority_rate": 4.878048780487805
+  }
+}

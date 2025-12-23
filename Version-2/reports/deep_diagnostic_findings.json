@@ -1,0 +1,7 @@
+{
+  "flight_risk_score_sparsity": "98.7% zero",
+  "frs_auc_roc": 0.5037130942207476,
+  "frs_lift": 0.7637785003211303,
+  "zero_moves_pct": 79.7252078685865,
+  "positive_change_pct": 94.63090650983574
+}

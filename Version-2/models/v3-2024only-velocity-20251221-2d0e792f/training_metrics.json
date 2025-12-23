@@ -1,0 +1,15 @@
+{
+  "model_version": "v3-2024only-velocity-20251221-2d0e792f",
+  "training_date": "2025-12-21T12:21:35.290517",
+  "train_period": "Feb-Sep 2024",
+  "test_period": "Oct-Nov 2024",
+  "train_samples": 9280,
+  "test_samples": 8403,
+  "n_features": 31,
+  "test_auc_roc": 0.6856123379220127,
+  "test_auc_pr": 0.08780113956898894,
+  "top_decile_lift": 3.1245449084913637,
+  "baseline_rate": 0.034630489111031774,
+  "top_decile_rate": 0.10820451843043995,
+  "notes": "2024-only training with velocity features. Excludes unstable Very New/New tenure buckets."
+}

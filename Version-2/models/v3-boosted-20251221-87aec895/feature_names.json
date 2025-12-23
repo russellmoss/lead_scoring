@@ -1,0 +1,49 @@
+{
+  "base_features": [
+    "industry_tenure_months",
+    "num_prior_firms",
+    "current_firm_tenure_months",
+    "pit_moves_3yr",
+    "pit_avg_prior_tenure_months",
+    "pit_restlessness_ratio",
+    "firm_aum_pit",
+    "log_firm_aum",
+    "firm_net_change_12mo",
+    "firm_departures_12mo",
+    "firm_arrivals_12mo",
+    "firm_stability_percentile",
+    "firm_stability_tier",
+    "is_gender_missing",
+    "is_linkedin_missing",
+    "is_personal_email_missing",
+    "has_firm_aum",
+    "has_valid_virtual_snapshot"
+  ],
+  "engineered_features": [
+    "flight_risk_score",
+    "is_fresh_start"
+  ],
+  "all_features": [
+    "industry_tenure_months",
+    "num_prior_firms",
+    "current_firm_tenure_months",
+    "pit_moves_3yr",
+    "pit_avg_prior_tenure_months",
+    "pit_restlessness_ratio",
+    "firm_aum_pit",
+    "log_firm_aum",
+    "firm_net_change_12mo",
+    "firm_departures_12mo",
+    "firm_arrivals_12mo",
+    "firm_stability_percentile",
+    "firm_stability_tier",
+    "is_gender_missing",
+    "is_linkedin_missing",
+    "is_personal_email_missing",
+    "has_firm_aum",
+    "has_valid_virtual_snapshot",
+    "flight_risk_score",
+    "is_fresh_start"
+  ],
+  "target": "target"
+}

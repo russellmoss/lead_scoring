@@ -1,0 +1,78 @@
+{
+  "best_cv_auc_pr": 0.06547093700341623,
+  "test_metrics": {
+    "test_auc_pr": 0.10698208700507734,
+    "test_auc_roc": 0.7002252955976911,
+    "baseline_rate": 0.041978148361127086,
+    "top_decile_rate": 0.12716763005780346,
+    "top_decile_lift": 3.0293768311030167,
+    "lift_chart": [
+      {
+        "decile": 1,
+        "conversion_rate": 0.12716763005780346,
+        "n_samples": 173
+      },
+      {
+        "decile": 2,
+        "conversion_rate": 0.06936416184971098,
+        "n_samples": 173
+      },
+      {
+        "decile": 3,
+        "conversion_rate": 0.046242774566473986,
+        "n_samples": 173
+      },
+      {
+        "decile": 4,
+        "conversion_rate": 0.03468208092485549,
+        "n_samples": 173
+      },
+      {
+        "decile": 5,
+        "conversion_rate": 0.04046242774566474,
+        "n_samples": 173
+      },
+      {
+        "decile": 6,
+        "conversion_rate": 0.028901734104046242,
+        "n_samples": 173
+      },
+      {
+        "decile": 7,
+        "conversion_rate": 0.011560693641618497,
+        "n_samples": 173
+      },
+      {
+        "decile": 8,
+        "conversion_rate": 0.04046242774566474,
+        "n_samples": 173
+      },
+      {
+        "decile": 9,
+        "conversion_rate": 0.011560693641618497,
+        "n_samples": 173
+      },
+      {
+        "decile": 10,
+        "conversion_rate": 0.01098901098901099,
+        "n_samples": 182
+      }
+    ]
+  },
+  "best_params": {
+    "max_depth": 8,
+    "learning_rate": 0.06653180924039676,
+    "n_estimators": 59,
+    "subsample": 0.6210246050803865,
+    "colsample_bytree": 0.731140310751857,
+    "gamma": 4.620443445893952,
+    "reg_alpha": 1.5883551370641094,
+    "reg_lambda": 3.342492092432078,
+    "min_child_weight": 7,
+    "scale_pos_weight": 33.76495726495727
+  },
+  "scale_pos_weight": 33.76495726495727,
+  "n_features": 12,
+  "n_train": 8135,
+  "n_test": 1739
+}

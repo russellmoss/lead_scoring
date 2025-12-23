@@ -1,0 +1,82 @@
+[
+  {
+    "name": "RIAFirmCRD",
+    "bq_type": "STRING",
+    "nullable": false
+  },
+  {
+    "name": "RIAFirmName",
+    "bq_type": "STRING",
+    "nullable": true
+  },
+  {
+    "name": "total_firm_aum_millions",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "total_reps",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "total_firm_clients",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "total_firm_hnw_clients",
+    "bq_type": "INT64",
+    "nullable": true
+  },
+  {
+    "name": "avg_clients_per_rep",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "aum_per_rep",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "avg_firm_growth_1y",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "avg_firm_growth_5y",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "pct_reps_with_cfp",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "pct_reps_with_disclosure",
+    "bq_type": "FLOAT64",
+    "nullable": true
+  },
+  {
+    "name": "firm_size_tier",
+    "bq_type": "STRING",
+    "nullable": true
+  },
+  {
+    "name": "multi_state_firm",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "national_firm",
+    "bq_type": "INT64",
+    "nullable": false
+  },
+  {
+    "name": "snapshot_at",
+    "bq_type": "DATE",
+    "nullable": false
+  }
+]

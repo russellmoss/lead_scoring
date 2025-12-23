@@ -1,0 +1,107 @@
+{
+  "cv_results": [
+    {
+      "fold": 1,
+      "train_auc_pr": 0.9205197544418006,
+      "val_auc_pr": 0.029306995488950653,
+      "train_auc_roc": 0.9986861861861862,
+      "val_auc_roc": 0.4742289488739793
+    },
+    {
+      "fold": 2,
+      "train_auc_pr": 0.6432460392322905,
+      "val_auc_pr": 0.0673166588393431,
+      "train_auc_roc": 0.9869873140337676,
+      "val_auc_roc": 0.6346084446048358
+    },
+    {
+      "fold": 3,
+      "train_auc_pr": 0.5036210060125903,
+      "val_auc_pr": 0.06565134957016894,
+      "train_auc_roc": 0.9608725017293922,
+      "val_auc_roc": 0.6348795756890706
+    },
+    {
+      "fold": 4,
+      "train_auc_pr": 0.3758561632429188,
+      "val_auc_pr": 0.058537707113805945,
+      "train_auc_roc": 0.9381749230682097,
+      "val_auc_roc": 0.6384234577303884
+    },
+    {
+      "fold": 5,
+      "train_auc_pr": 0.3155480231389246,
+      "val_auc_pr": 0.03480267629018925,
+      "train_auc_roc": 0.9291665012646699,
+      "val_auc_roc": 0.61015008283793
+    }
+  ],
+  "test_metrics": {
+    "test_auc_pr": 0.07378671811149033,
+    "test_auc_roc": 0.6674340969264418,
+    "baseline_rate": 0.041978148361127086,
+    "top_decile_rate": 0.10982658959537572,
+    "top_decile_lift": 2.61627999049806,
+    "lift_chart": [
+      {
+        "decile": 1,
+        "conversion_rate": 0.10982658959537572,
+        "n_samples": 173
+      },
+      {
+        "decile": 2,
+        "conversion_rate": 0.046242774566473986,
+        "n_samples": 173
+      },
+      {
+        "decile": 3,
+        "conversion_rate": 0.06936416184971098,
+        "n_samples": 173
+      },
+      {
+        "decile": 4,
+        "conversion_rate": 0.028901734104046242,
+        "n_samples": 173
+      },
+      {
+        "decile": 5,
+        "conversion_rate": 0.05202312138728324,
+        "n_samples": 173
+      },
+      {
+        "decile": 6,
+        "conversion_rate": 0.03468208092485549,
+        "n_samples": 173
+      },
+      {
+        "decile": 7,
+        "conversion_rate": 0.04046242774566474,
+        "n_samples": 173
+      },
+      {
+        "decile": 8,
+        "conversion_rate": 0.017341040462427744,
+        "n_samples": 173
+      },
+      {
+        "decile": 9,
+        "conversion_rate": 0.017341040462427744,
+        "n_samples": 173
+      },
+      {
+        "decile": 10,
+        "conversion_rate": 0.005494505494505495,
+        "n_samples": 182
+      }
+    ]
+  },
+  "scale_pos_weight": 33.76495726495727,
+  "n_features": 14,
+  "n_train": 8135,
+  "n_test": 1739,
+  "new_features": [
+    "pit_restlessness_ratio",
+    "flight_risk_score",
+    "is_fresh_start"
+  ]
+}

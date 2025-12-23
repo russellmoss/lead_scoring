@@ -1,0 +1,12 @@
+{
+  "model_version": "v3-velocity-20251221-33684903",
+  "training_date": "2025-12-21T12:12:06.388057",
+  "train_samples": 30727,
+  "test_samples": 6919,
+  "n_features": 35,
+  "test_auc_roc": 0.5633857282293605,
+  "test_auc_pr": 0.05252403692411327,
+  "top_decile_lift": 1.4581225915221578,
+  "baseline_rate": 0.04162451221274751,
+  "top_decile_rate": 0.06069364161849711,
+  "velocity_importance": 

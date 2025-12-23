@@ -1,0 +1,15 @@
+{
+  "model_version": "v3-boosted-20251221-87aec895",
+  "training_date": "2025-12-21T05:26:42.237773",
+  "train_samples": 30727,
+  "test_samples": 6919,
+  "n_features": 20,
+  "scale_pos_weight": 26.337188612099645,
+  "optuna_trials": 50,
+  "best_cv_auc_pr": 0.04389767623511033,
+  "test_auc_roc": 0.5853391163558372,
+  "test_auc_pr": 0.05622569711924853,
+  "top_decile_lift": 1.4623490338164251,
+  "top_decile_rate": 0.06086956521739131,
+  "baseline_rate": 0.04162451221274751
+}

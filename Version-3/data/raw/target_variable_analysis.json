@@ -1,0 +1,30 @@
+{
+  "analysis_date": "2025-10-31",
+  "maturity_window_days": 43,
+  "capture_percentage": 0.9,
+  "timing_statistics": {
+    "mean_days": 20.461180124223603,
+    "median_days": 1.0,
+    "p90_days": 43.0,
+    "p95_days": 121.89999999999964,
+    "p99_days": 342.69000000000005
+  },
+  "censoring_analysis": {
+    "total_contacted": 52626,
+    "mature_leads": 37805,
+    "right_censored_leads": 14821,
+    "mature_pct": 71.84,
+    "mature_mqls": 1649,
+    "mature_mql_rate": 4.36,
+    "censored_mqls": 537,
+    "censored_mql_rate": 3.62
+  },
+  "stability_metrics": {
+    "total_leads": 52625,
+    "labeled_leads": 37804,
+    "positive_leads": 1468,
+    "negative_leads": 36336,
+    "positive_rate": 3.88
+  },
+  "timestamp": "2025-12-21T18:56:48.458522"
+}
