@@ -86,7 +86,13 @@ coverage.xml
 
 # ===== DATA FILES =====
 # Large data files (CSV, Excel, etc.)
+# CSV files - EXCLUDE ALL (may contain PII/sensitive data)
 *.csv
+**/*.csv
+**/exports/*.csv
+**/data/**/*.csv
+**/output/**/*.csv
+**/results/**/*.csv
 !**/requirements.txt
 *.xlsx
 *.xls

@@ -2,7 +2,7 @@
 
 **Purpose:** Iteratively develop and deploy lead scoring algorithms and lead list generation systems for financial advisor recruitment.
 
-**Current Production Model:** [Version 3.2.5](./Version-3/VERSION_3_MODEL_REPORT.md) - Rules-based tiered classification system with LinkedIn prioritization
+**Current Production System:** [Version 3.2.5](./Version-3/VERSION_3_MODEL_REPORT.md) + [Version 4.0.0](./Version-4/VERSION_4_MODEL_REPORT.md) - Hybrid approach combining V3 rules-based prioritization with V4 ML deprioritization
 
 **Status:** ✅ Production Ready - Generating lead lists for sales outreach campaigns
 
@@ -10,7 +10,12 @@
 
 ## Repository Overview
 
-This repository contains the complete development history of lead scoring models for identifying high-conversion financial advisor prospects. The project has evolved through multiple iterations, from machine learning approaches (Version 1 & 2) to a rules-based tier system (Version 3) that achieves superior performance with full explainability.
+This repository contains the complete development history of lead scoring models for identifying high-conversion financial advisor prospects. The project has evolved through multiple iterations:
+
+- **Version 1 & 2**: Initial machine learning approaches (XGBoost)
+- **Version 3**: Rules-based tier system with superior performance and full explainability (2.0x to 4.3x lift)
+- **Version 4**: XGBoost ML model for deprioritization (identifies bottom 20% to skip)
+- **Hybrid System**: V3 + V4 working together - V3 prioritizes best leads, V4 filters out worst leads
 
 ### Key Objectives
 
@@ -22,11 +27,37 @@ This repository contains the complete development history of lead scoring models
 
 ## Current Production System
 
-### Version 3.2.5 (Deployed)
+### Hybrid Approach: V3 + V4
+
+The production system uses a **hybrid approach** that combines the strengths of both models:
+
+1. **V3 Rules-Based Model** (Primary): Prioritizes leads into tiers (2.0x to 4.3x lift)
+2. **V4 XGBoost Model** (Deprioritization Filter): Identifies bottom 20% of leads to skip (1.33% conversion vs 3.20% baseline)
+
+**How They Work Together:**
+```
+Lead Scoring Pipeline:
+1. V3 Rules → Assign Tier (T1A, T1B, T1, T2, T3, T4, T5, STANDARD)
+2. V4 Score → Assign Percentile (1-100) and deprioritize flag
+3. Final Lead List:
+   - V3 T1-T2 leads → HIGHEST PRIORITY (regardless of V4 score)
+   - V3 T3-T5 leads → HIGH PRIORITY (if V4 percentile > 20%)
+   - V3 STANDARD leads → SKIP if V4 deprioritize = TRUE (bottom 20%)
+   - All other leads → Standard priority
+```
+
+**Expected Impact:**
+- **V3 Prioritization**: 1.74x lift on top decile (best leads)
+- **V4 Deprioritization**: 11.7% efficiency gain (skip 20% of leads, lose only 8.3% of conversions)
+- **Combined**: Best of both worlds - identify top leads AND filter out bottom leads
+
+---
+
+### Version 3.2.5 (Primary Prioritization)
 
 **Model Type:** Rules-based tiered classification system  
 **Performance:** 2.0x to 4.3x lift over baseline conversion rates  
-**Status:** ✅ Production Ready
+**Status:** ✅ Production Ready (Primary Model)
 
 **Key Features:**
 - **Tier-based prioritization:** 8 priority tiers (1A, 1B, 1, 1F, 2, 3, 4, 5) plus STANDARD baseline
@@ -36,15 +67,80 @@ This repository contains the complete development history of lead scoring models
 - **Title exclusions:** Data-driven exclusions remove non-advisor roles (operations, compliance, etc.)
 - **Insurance exclusions:** Filters out insurance agents and insurance-focused firms
 
-**Lead List Generation:**
-- **Query:** [`Version-3/January_2026_Lead_List_Query_V3.2.sql`](./Version-3/January_2026_Lead_List_Query_V3.2.sql)
-- **Output:** 2,400 prioritized leads with tier assignments, expected conversion rates, and detailed narratives
-- **Source:** New prospects (not in Salesforce) + Recyclable leads (180+ days no contact)
-- **Diversity:** Maximum 50 leads per firm to ensure broad market coverage
-
 **Comprehensive Documentation:**
 - **Full Technical Report:** [`Version-3/VERSION_3_MODEL_REPORT.md`](./Version-3/VERSION_3_MODEL_REPORT.md)
 - **Model Guide:** [`Version-3/V3_Lead_Scoring_Model_Complete_Guide.md`](./Version-3/V3_Lead_Scoring_Model_Complete_Guide.md)
+
+---
+
+### Version 4.0.0 (Deprioritization Filter)
+
+**Model Type:** XGBoost machine learning model  
+**Performance:** Identifies bottom 20% with 1.33% conversion (58% below baseline)  
+**Status:** ✅ Production Ready (Deprioritization Filter)
+
+**What is V4?**
+V4 is an XGBoost machine learning model trained on historical lead conversion data to identify leads that should be **deprioritized or skipped**. Unlike V3, which focuses on finding the best leads, V4 excels at finding the worst leads.
+
+**How V4 Was Created:**
+1. **Data Extraction**: Trained on "Provided Lead List" leads only (cold outbound, not inbound)
+2. **Feature Engineering**: 14 Point-in-Time (PIT) compliant features:
+   - Tenure buckets, experience buckets, mobility tiers
+   - Firm stability metrics (rep count, net change, stability tier)
+   - Wirehouse flags, broker protocol membership
+   - Data quality flags (has_email, has_linkedin)
+   - Interaction features (mobility × heavy bleeding, short tenure × high mobility)
+3. **Model Training**: XGBoost with strong regularization to prevent overfitting
+4. **Validation**: Tested on Aug-Oct 2025 data (never seen during training)
+5. **Deployment**: Integrated into monthly lead list generation pipeline
+
+**Key Findings:**
+- **Bottom 20%**: Converts at 1.33% (0.42x lift, 58% below baseline)
+- **Top 80%**: Converts at 3.66% (1.15x lift, 14% above baseline)
+- **Efficiency Gain**: Skip 20% of leads, lose only 8.3% of conversions = **11.7% efficiency gain**
+
+**Why V4 Doesn't Replace V3:**
+- **V3 Top Decile Lift**: 1.74x (better than V4's 1.51x)
+- **V4 Deprioritization**: 0.42x on bottom 20% (V3 doesn't do this)
+- **Use Case**: V3 for prioritization, V4 for deprioritization = **complementary, not competitive**
+
+**Comprehensive Documentation:**
+- **Full Technical Report:** [`Version-4/VERSION_4_MODEL_REPORT.md`](./Version-4/VERSION_4_MODEL_REPORT.md)
+- **Deprioritization Analysis:** [`Version-4/reports/deprioritization_analysis.md`](./Version-4/reports/deprioritization_analysis.md)
+
+---
+
+### Monthly Lead List Generation (Hybrid Process)
+
+**Process:** [`Lead_List_Generation/Monthly_Lead_List_Generation_V3_V4_Hybrid.md`](./Lead_List_Generation/Monthly_Lead_List_Generation_V3_V4_Hybrid.md)
+
+**Step-by-Step:**
+1. **Calculate V4 Features** (`sql/v4_prospect_features.sql`)
+   - Generate all 14 V4 features for all FINTRX prospects (~285K)
+   - Uses `CURRENT_DATE()` for PIT compliance
+   - Output: `ml_features.v4_prospect_features`
+
+2. **Score with V4 Model** (`scripts/score_prospects_monthly.py`)
+   - Load V4 XGBoost model and score all prospects
+   - Calculate percentiles (1-100) and deprioritize flags (bottom 20%)
+   - Output: `ml_features.v4_prospect_scores`
+
+3. **Generate Hybrid Lead List** (`sql/January_2026_Lead_List_V3_V4_Hybrid.sql`)
+   - Apply V3 tier logic to all prospects
+   - Join V4 scores and filter out `v4_deprioritize = TRUE` leads
+   - Apply tier quotas and LinkedIn prioritization
+   - Output: `ml_features.january_2026_lead_list_v4` (2,400 leads)
+
+4. **Export to CSV** (`scripts/export_lead_list.py`)
+   - Export lead list with all V3 and V4 columns
+   - Validate data quality (no duplicates, required fields present)
+   - Output: `exports/january_2026_lead_list_YYYYMMDD.csv`
+
+**Result:**
+- **2,400 prioritized leads** with V3 tier assignments
+- **Zero bottom 20% leads** (all filtered out by V4)
+- **Average V4 percentile: 95.6** (top 5% of prospects)
+- **99.9% LinkedIn coverage** for SDR outreach
 
 ---
 
@@ -52,13 +148,33 @@ This repository contains the complete development history of lead scoring models
 
 ```
 Lead Scoring/
-├── Version-3/              # ✅ CURRENT PRODUCTION MODEL
+├── Version-3/              # ✅ PRIMARY PRODUCTION MODEL (Prioritization)
 │   ├── VERSION_3_MODEL_REPORT.md          # Comprehensive technical documentation
-│   ├── January_2026_Lead_List_Query_V3.2.sql  # Production lead list generator
+│   ├── January_2026_Lead_List_Query_V3.2.sql  # V3-only lead list generator
 │   ├── sql/                 # SQL feature engineering and tier logic
 │   ├── scripts/             # Phase execution scripts
 │   ├── reports/             # Validation and analysis reports
 │   └── models/              # Model registry and metadata
+│
+├── Version-4/              # ✅ DEPRIORITIZATION FILTER (ML Model)
+│   ├── VERSION_4_MODEL_REPORT.md         # Comprehensive technical documentation
+│   ├── models/v4.0.0/      # Trained XGBoost model (model.pkl)
+│   ├── sql/                 # V4 feature engineering SQL
+│   ├── scripts/             # Training, validation, and scoring scripts
+│   ├── reports/             # Performance and deprioritization analysis
+│   ├── inference/           # Production scoring interface (LeadScorerV4)
+│   └── EXECUTION_LOG.md    # Development execution log
+│
+├── Lead_List_Generation/   # ✅ HYBRID LEAD LIST GENERATION (V3 + V4)
+│   ├── Monthly_Lead_List_Generation_V3_V4_Hybrid.md  # Process documentation
+│   ├── sql/
+│   │   ├── v4_prospect_features.sql      # V4 features for all prospects
+│   │   └── January_2026_Lead_List_V3_V4_Hybrid.sql  # Hybrid query
+│   ├── scripts/
+│   │   ├── score_prospects_monthly.py    # V4 scoring script
+│   │   └── export_lead_list.py           # CSV export script
+│   ├── exports/             # Generated CSV lead lists (gitignored)
+│   └── logs/                # Execution logs
 │
 ├── Version-2/              # Machine Learning Approach (XGBoost)
 │   ├── VERSION_2_MODEL_REPORT.md
@@ -106,12 +222,12 @@ Lead Scoring/
 - **Issues:** Data leakage concerns, limited explainability
 - **Status:** Superseded by Version 3
 
-### Version 3: Rules-Based Tier System (Current Production)
+### Version 3: Rules-Based Tier System (Primary Production Model)
 - **Approach:** SQL-based business rules (not ML)
 - **Performance:** 2.0x to 4.3x lift across priority tiers
 - **Key Innovation:** Point-in-Time (PIT) feature engineering eliminates data leakage
 - **Explainability:** Every tier assignment is transparent and auditable
-- **Status:** ✅ Production Ready
+- **Status:** ✅ Production Ready (Primary Prioritization)
 
 **Version 3 Evolution:**
 - **V3.1:** Initial rules-based tier system (3.69x lift for Tier 1)
@@ -121,6 +237,20 @@ Lead Scoring/
 - **V3.2.3:** Added producing advisor filter
 - **V3.2.4:** Added insurance exclusions
 - **V3.2.5:** Added LinkedIn prioritization (≥90% coverage)
+
+### Version 4: XGBoost Deprioritization Filter (Complementary Model)
+- **Approach:** XGBoost machine learning model
+- **Performance:** Identifies bottom 20% with 1.33% conversion (58% below baseline)
+- **Key Innovation:** ML model trained specifically for deprioritization (finding worst leads)
+- **Use Case:** Filter out low-value leads that V3 doesn't explicitly exclude
+- **Status:** ✅ Production Ready (Deprioritization Filter)
+
+**Version 4 Development:**
+- **V4.0.0:** Initial XGBoost model with 14 PIT-compliant features
+- **Training Data:** "Provided Lead List" leads only (cold outbound, Feb 2024 - Jul 2025)
+- **Test Data:** Aug-Oct 2025 (never seen during training)
+- **Deployment:** Integrated into monthly lead list generation as deprioritization filter
+- **Hybrid Integration:** Works alongside V3 to filter bottom 20% while V3 prioritizes top tiers
 
 ---
 
@@ -170,18 +300,24 @@ Leads are assigned to priority tiers based on business rules:
 - **Location:** `northamerica-northeast2`
 
 **Key Tables:**
-- `lead_scoring_features_pit` - Feature engineering table (37 features)
-- `lead_scores_v3_2_12212025` - Production scoring table
-- `january_2026_lead_list` - Generated lead lists
+- `lead_scoring_features_pit` - V3 feature engineering table (37 features)
+- `lead_scores_v3_2_12212025` - V3 production scoring table
+- `v4_prospect_features` - V4 feature engineering table (14 features, all prospects)
+- `v4_prospect_scores` - V4 scoring table (percentiles and deprioritize flags)
+- `january_2026_lead_list_v4` - Generated hybrid lead lists (V3 + V4)
 
 ---
 
 ## Getting Started
 
 ### For Model Users (Sales Team)
-1. **Query Lead Lists:** Use `Version-3/January_2026_Lead_List_Query_V3.2.sql` to generate prioritized lead lists
-2. **Review Tier Assignments:** Each lead includes tier, expected conversion rate, and explanation narrative
-3. **Prioritize Outreach:** Focus on Tier 1A/1B/1 leads first (highest conversion rates)
+1. **Use Hybrid Lead Lists:** Monthly lead lists are generated using both V3 and V4 (see `Lead_List_Generation/`)
+2. **Review Tier Assignments:** Each lead includes V3 tier, expected conversion rate, and V4 percentile
+3. **Prioritize Outreach:** 
+   - **Highest Priority**: V3 Tier 1A/1B/1 leads (regardless of V4 score)
+   - **High Priority**: V3 Tier 2-5 leads with V4 percentile > 20%
+   - **Skip**: Leads with V4 deprioritize flag = TRUE (bottom 20%, unless V3 Tier 1-2)
+4. **Export Format:** CSV files in `Lead_List_Generation/exports/` with all scoring columns
 
 ### For Developers
 1. **Read Documentation:** Start with [`Version-3/VERSION_3_MODEL_REPORT.md`](./Version-3/VERSION_3_MODEL_REPORT.md)
@@ -193,13 +329,36 @@ Leads are assigned to priority tiers based on business rules:
 ## Key Files
 
 ### Production Files
-- **Lead List Generator:** [`Version-3/January_2026_Lead_List_Query_V3.2.sql`](./Version-3/January_2026_Lead_List_Query_V3.2.sql)
+
+**V3 (Primary Prioritization):**
+- **Lead List Generator (V3 Only):** [`Version-3/January_2026_Lead_List_Query_V3.2.sql`](./Version-3/January_2026_Lead_List_Query_V3.2.sql)
 - **Tier Logic:** [`Version-3/sql/phase_4_v3_tiered_scoring.sql`](./Version-3/sql/phase_4_v3_tiered_scoring.sql)
 - **Feature Engineering:** [`Version-3/sql/lead_scoring_features_pit.sql`](./Version-3/sql/lead_scoring_features_pit.sql)
 
+**V4 (Deprioritization Filter):**
+- **V4 Feature Engineering:** [`Lead_List_Generation/sql/v4_prospect_features.sql`](./Lead_List_Generation/sql/v4_prospect_features.sql)
+- **V4 Scoring Script:** [`Lead_List_Generation/scripts/score_prospects_monthly.py`](./Lead_List_Generation/scripts/score_prospects_monthly.py)
+- **V4 Model:** [`Version-4/models/v4.0.0/model.pkl`](./Version-4/models/v4.0.0/model.pkl)
+
+**Hybrid Lead List Generation:**
+- **Hybrid Query:** [`Lead_List_Generation/sql/January_2026_Lead_List_V3_V4_Hybrid.sql`](./Lead_List_Generation/sql/January_2026_Lead_List_V3_V4_Hybrid.sql)
+- **Export Script:** [`Lead_List_Generation/scripts/export_lead_list.py`](./Lead_List_Generation/scripts/export_lead_list.py)
+- **Process Documentation:** [`Lead_List_Generation/Monthly_Lead_List_Generation_V3_V4_Hybrid.md`](./Lead_List_Generation/Monthly_Lead_List_Generation_V3_V4_Hybrid.md)
+
 ### Documentation
+
+**V3 (Primary Model):**
 - **Technical Report:** [`Version-3/VERSION_3_MODEL_REPORT.md`](./Version-3/VERSION_3_MODEL_REPORT.md) ⭐ **START HERE**
 - **User Guide:** [`Version-3/V3_Lead_Scoring_Model_Complete_Guide.md`](./Version-3/V3_Lead_Scoring_Model_Complete_Guide.md)
+
+**V4 (Deprioritization Filter):**
+- **Technical Report:** [`Version-4/VERSION_4_MODEL_REPORT.md`](./Version-4/VERSION_4_MODEL_REPORT.md)
+- **Deprioritization Analysis:** [`Version-4/reports/deprioritization_analysis.md`](./Version-4/reports/deprioritization_analysis.md)
+
+**Hybrid Process:**
+- **Monthly Generation Guide:** [`Lead_List_Generation/Monthly_Lead_List_Generation_V3_V4_Hybrid.md`](./Lead_List_Generation/Monthly_Lead_List_Generation_V3_V4_Hybrid.md)
+
+**Data:**
 - **Data Dictionary:** [`documentation/FINTRX_Data_Dictionary.md`](./documentation/FINTRX_Data_Dictionary.md)
 
 ---
@@ -279,6 +438,8 @@ For questions about the model or lead list generation:
 ---
 
 **Last Updated:** December 2025  
-**Current Model Version:** V3.2.5_12232025_LINKEDIN_PRIORITIZATION  
-**Status:** ✅ Production Ready
+**Current Model Versions:** 
+- **V3.2.5** (Primary Prioritization) - Rules-based tier system
+- **V4.0.0** (Deprioritization Filter) - XGBoost ML model  
+**Status:** ✅ Production Ready (Hybrid Deployment)
 
