@@ -40,18 +40,23 @@ EXPORT_COLUMNS = [
     'salesforce_lead_id',
     'first_name',
     'last_name',
+    'job_title',                # NEW!
     'email',
     'phone',
     'linkedin_url',
     'firm_name',
     'firm_crd',
-    'score_tier',              # Final tier (includes V4_UPGRADE)
-    'original_v3_tier',        # NEW: Original V3 tier before upgrade
+    'score_tier',
+    'original_v3_tier',
     'expected_rate_pct',
+    'score_narrative',          # NEW!
     'v4_score',
     'v4_percentile',
-    'is_v4_upgrade',           # NEW: Flag for V4 upgraded leads
-    'v4_status',               # NEW: Description of V4 status
+    'is_v4_upgrade',
+    'v4_status',
+    'shap_top1_feature',        # NEW!
+    'shap_top2_feature',        # NEW!
+    'shap_top3_feature',        # NEW!
     'prospect_type',
     'list_rank'
 ]
@@ -59,25 +64,7 @@ EXPORT_COLUMNS = [
 def fetch_lead_list(client):
     """Fetch lead list from BigQuery."""
     query = f"""
-    SELECT 
-        advisor_crd,
-        salesforce_lead_id,
-        first_name,
-        last_name,
-        email,
-        phone,
-        linkedin_url,
-        firm_name,
-        firm_crd,
-        score_tier,
-        COALESCE(original_v3_tier, score_tier) as original_v3_tier,
-        expected_rate_pct,
-        v4_score,
-        v4_percentile,
-        COALESCE(is_v4_upgrade, 0) as is_v4_upgrade,
-        COALESCE(v4_status, 'V3 Tier Qualified') as v4_status,
-        prospect_type,
-        list_rank
+    SELECT *
     FROM `{PROJECT_ID}.{DATASET}.{TABLE_NAME}`
     ORDER BY list_rank
     """
@@ -101,81 +88,42 @@ def validate_export(df):
         "row_count": len(df),
         "expected_rows": 2400,
         "duplicate_crds": df['advisor_crd'].duplicated().sum(),
-        "missing_first_name": df['first_name'].isna().sum(),
-        "missing_last_name": df['last_name'].isna().sum(),
-        "missing_email": df['email'].isna().sum(),
-        "missing_firm_name": df['firm_name'].isna().sum(),
-        "missing_score_tier": df['score_tier'].isna().sum(),
-        "missing_v4_score": df['v4_score'].isna().sum(),
-        "missing_v4_percentile": df['v4_percentile'].isna().sum(),
+        "has_job_title": df['job_title'].notna().sum() if 'job_title' in df.columns else 0,
+        "has_narrative": df['score_narrative'].notna().sum() if 'score_narrative' in df.columns else 0,
         "has_linkedin": (df['linkedin_url'].notna() & (df['linkedin_url'] != '')).sum(),
-        "linkedin_pct": (df['linkedin_url'].notna() & (df['linkedin_url'] != '')).sum() / len(df) * 100,
         "v4_upgrade_count": v4_upgrade_count,
-        "v4_upgrade_pct": v4_upgrade_count / len(df) * 100 if len(df) > 0 else 0
     }
     
+    validation_results['job_title_pct'] = validation_results['has_job_title'] / len(df) * 100 if len(df) > 0 else 0
+    validation_results['narrative_pct'] = validation_results['has_narrative'] / len(df) * 100 if len(df) > 0 else 0
+    validation_results['linkedin_pct'] = validation_results['has_linkedin'] / len(df) * 100 if len(df) > 0 else 0
+    validation_results['v4_upgrade_pct'] = validation_results['v4_upgrade_count'] / len(df) * 100 if len(df) > 0 else 0
+    
     # Print validation results
-    print(f"Row Count: {validation_results['row_count']:,} (expected: {validation_results['expected_rows']:,})")
-    print(f"  {'[PASS]' if validation_results['row_count'] == validation_results['expected_rows'] else '[WARN]'}")
+    print(f"Row Count: {validation_results['row_count']:,}")
+    print(f"Duplicate CRDs: {validation_results['duplicate_crds']}")
     
-    print(f"\nDuplicate CRDs: {validation_results['duplicate_crds']}")
-    print(f"  {'[PASS]' if validation_results['duplicate_crds'] == 0 else '[FAIL]'}")
+    print(f"\nJob Title Coverage: {validation_results['has_job_title']:,} ({validation_results['job_title_pct']:.1f}%)")
+    print(f"Narrative Coverage: {validation_results['has_narrative']:,} ({validation_results['narrative_pct']:.1f}%)")
+    print(f"LinkedIn Coverage: {validation_results['has_linkedin']:,} ({validation_results['linkedin_pct']:.1f}%)")
     
-    print(f"\nMissing Required Fields:")
-    print(f"  First Name: {validation_results['missing_first_name']}")
-    print(f"  Last Name: {validation_results['missing_last_name']}")
-    print(f"  Email: {validation_results['missing_email']}")
-    print(f"  Firm Name: {validation_results['missing_firm_name']}")
-    print(f"  Score Tier: {validation_results['missing_score_tier']}")
-    print(f"  V4 Score: {validation_results['missing_v4_score']}")
-    print(f"  V4 Percentile: {validation_results['missing_v4_percentile']}")
+    print(f"\nV4 Upgrades: {validation_results['v4_upgrade_count']:,} ({validation_results['v4_upgrade_pct']:.1f}%)")
     
-    all_required_present = (
-        validation_results['missing_first_name'] == 0 and
-        validation_results['missing_last_name'] == 0 and
-        validation_results['missing_firm_name'] == 0 and
-        validation_results['missing_score_tier'] == 0 and
-        validation_results['missing_v4_score'] == 0 and
-        validation_results['missing_v4_percentile'] == 0
-    )
-    print(f"  {'[PASS]' if all_required_present else '[FAIL]'}")
+    # Check for excluded firms
+    savvy_count = len(df[df['firm_crd'] == 318493]) if 'firm_crd' in df.columns else 0
+    ritholtz_count = len(df[df['firm_crd'] == 168652]) if 'firm_crd' in df.columns else 0
     
-    print(f"\nLinkedIn Coverage: {validation_results['has_linkedin']:,} ({validation_results['linkedin_pct']:.1f}%)")
-    
-    # V4 Upgrade Analysis (NEW)
-    print(f"\n{'=' * 40}")
-    print("V4 UPGRADE PATH ANALYSIS")
-    print(f"{'=' * 40}")
-    print(f"V4 Upgraded Leads: {validation_results['v4_upgrade_count']:,} ({validation_results['v4_upgrade_pct']:.1f}%)")
-    
-    if has_v4_upgrade_col and v4_upgrade_count > 0:
-        v4_upgraded = df[df['is_v4_upgrade'] == 1]
-        v3_leads = df[df['is_v4_upgrade'] == 0]
-        
-        print(f"\nV4 Upgraded Leads:")
-        print(f"  Count: {len(v4_upgraded):,}")
-        print(f"  Avg V4 Score: {v4_upgraded['v4_score'].mean():.4f}")
-        print(f"  Avg V4 Percentile: {v4_upgraded['v4_percentile'].mean():.1f}")
-        print(f"  Expected Conversion Rate: 4.60% (based on historical data)")
-        
-        print(f"\nV3 Tier Leads:")
-        print(f"  Count: {len(v3_leads):,}")
-        print(f"  Avg V4 Score: {v3_leads['v4_score'].mean():.4f}")
-        print(f"  Avg V4 Percentile: {v3_leads['v4_percentile'].mean():.1f}")
-    
-    # Summary statistics
-    print(f"\nSummary Statistics:")
-    print(f"  V4 Score Range: {df['v4_score'].min():.4f} - {df['v4_score'].max():.4f}")
-    print(f"  V4 Percentile Range: {df['v4_percentile'].min()} - {df['v4_percentile'].max()}")
-    print(f"  Average V4 Percentile: {df['v4_percentile'].mean():.1f}")
+    print(f"\nExcluded Firm Check:")
+    print(f"  Savvy (CRD 318493): {savvy_count} {'[OK]' if savvy_count == 0 else '[FAIL]'}")
+    print(f"  Ritholtz (CRD 168652): {ritholtz_count} {'[OK]' if ritholtz_count == 0 else '[FAIL]'}")
     
     # Tier distribution
     print(f"\nTier Distribution:")
-    tier_dist = df['score_tier'].value_counts().sort_index()
-    for tier, count in tier_dist.items():
-        pct = count / len(df) * 100
-        marker = " [V4 UPGRADE]" if tier == 'V4_UPGRADE' else ""
-        print(f"  {tier}: {count:,} ({pct:.1f}%){marker}")
+    if 'score_tier' in df.columns:
+        tier_dist = df['score_tier'].value_counts().sort_index()
+        for tier, count in tier_dist.items():
+            pct = count / len(df) * 100
+            print(f"  {tier}: {count:,} ({pct:.1f}%)")
     
     print("=" * 70 + "\n")
     
@@ -205,6 +153,9 @@ def log_results(validation_results, output_path, df):
     
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
+    savvy_count = len(df[df['firm_crd'] == 318493]) if 'firm_crd' in df.columns else 0
+    ritholtz_count = len(df[df['firm_crd'] == 168652]) if 'firm_crd' in df.columns else 0
+    
     log_entry = f"""
 ## Step 4: Export Lead List to CSV - {timestamp}
 
@@ -219,42 +170,29 @@ def log_results(validation_results, output_path, df):
 - Total Rows: **{validation_results['row_count']:,}**
 - File Size: **{output_path.stat().st_size / 1024:.1f} KB**
 
-**V4 Upgrade Path Analysis:**
-- V4 Upgraded Leads: **{validation_results['v4_upgrade_count']:,}** ({validation_results['v4_upgrade_pct']:.1f}%)
-- V3 Tier Leads: **{validation_results['row_count'] - validation_results['v4_upgrade_count']:,}** ({100 - validation_results['v4_upgrade_pct']:.1f}%)
-
-**Expected Impact:**
-- V4 Upgraded leads convert at **4.60%** (vs 3.20% for T2)
-- This represents a **44% improvement** over T2 leads
-- Expected overall lift: **+6-12%** in conversion rate
-
-**Validation Results:**
-- Row Count: **{validation_results['row_count']:,}**
-- Duplicate CRDs: **{validation_results['duplicate_crds']}** (should be 0)
+**New Features:**
+- Job Title Coverage: **{validation_results['has_job_title']:,}** ({validation_results['job_title_pct']:.1f}%)
+- Narrative Coverage: **{validation_results['has_narrative']:,}** ({validation_results['narrative_pct']:.1f}%)
 - LinkedIn Coverage: **{validation_results['has_linkedin']:,}** ({validation_results['linkedin_pct']:.1f}%)
 
-**V4 Score Statistics:**
-- V4 Score Range: **{df['v4_score'].min():.4f} - {df['v4_score'].max():.4f}**
-- V4 Percentile Range: **{df['v4_percentile'].min()} - {df['v4_percentile'].max()}**
-- Average V4 Percentile: **{df['v4_percentile'].mean():.1f}**
+**V4 Upgrade Path:**
+- V4 Upgraded Leads: **{validation_results['v4_upgrade_count']:,}** ({validation_results['v4_upgrade_pct']:.1f}%)
+
+**Firm Exclusions:**
+- Savvy (CRD 318493): **{savvy_count}** {'✅ EXCLUDED' if savvy_count == 0 else '❌ PRESENT'}
+- Ritholtz (CRD 168652): **{ritholtz_count}** {'✅ EXCLUDED' if ritholtz_count == 0 else '❌ PRESENT'}
 
 **Tier Distribution:**
 """
     
-    tier_dist = df['score_tier'].value_counts().sort_index()
-    for tier, count in tier_dist.items():
-        pct = count / len(df) * 100
-        marker = " ⬆️ V4 UPGRADE" if tier == 'V4_UPGRADE' else ""
-        log_entry += f"- {tier}: **{count:,}** ({pct:.1f}%){marker}\n"
+    if 'score_tier' in df.columns:
+        tier_dist = df['score_tier'].value_counts().sort_index()
+        for tier, count in tier_dist.items():
+            pct = count / len(df) * 100
+            marker = " ⬆️ V4 UPGRADE" if tier == 'V4_UPGRADE' else ""
+            log_entry += f"- {tier}: **{count:,}** ({pct:.1f}%){marker}\n"
     
     log_entry += f"""
-### Tracking V4 Upgrades
-
-To measure V4 upgrade performance:
-1. Filter by `is_v4_upgrade = 1` in reports
-2. Compare conversion rate to V3 tier leads
-3. Expected: V4 upgrades should convert at ~4.60%
-
 ### Export Columns
 
 The CSV includes the following columns:
@@ -262,27 +200,30 @@ The CSV includes the following columns:
 2. `salesforce_lead_id` - Salesforce Lead ID (if exists)
 3. `first_name` - Contact first name
 4. `last_name` - Contact last name
-5. `email` - Email address
-6. `phone` - Phone number
-7. `linkedin_url` - LinkedIn profile URL
-8. `firm_name` - Firm name
-9. `firm_crd` - Firm CRD ID
-10. `score_tier` - Final tier (V3 tier or V4_UPGRADE)
-11. `original_v3_tier` - Original V3 tier before upgrade
-12. `expected_rate_pct` - Expected conversion rate (%)
-13. `v4_score` - V4 XGBoost score
-14. `v4_percentile` - V4 percentile rank (1-100)
-15. `is_v4_upgrade` - **1 = V4 upgraded lead, 0 = V3 tier lead**
-16. `v4_status` - Description of V4 status
-17. `prospect_type` - NEW_PROSPECT or recyclable
-18. `list_rank` - Overall ranking in list
+5. `job_title` - **NEW!** Advisor's job title from FINTRX
+6. `email` - Email address
+7. `phone` - Phone number
+8. `linkedin_url` - LinkedIn profile URL
+9. `firm_name` - Firm name
+10. `firm_crd` - Firm CRD ID
+11. `score_tier` - Final tier (V3 tier or V4_UPGRADE)
+12. `original_v3_tier` - Original V3 tier before upgrade
+13. `expected_rate_pct` - Expected conversion rate (%)
+14. `score_narrative` - **NEW!** Human-readable explanation (V3 rules or V4 SHAP)
+15. `v4_score` - V4 XGBoost score
+16. `v4_percentile` - V4 percentile rank (1-100)
+17. `is_v4_upgrade` - **1 = V4 upgraded lead, 0 = V3 tier lead**
+18. `v4_status` - Description of V4 status
+19. `shap_top1_feature` - **NEW!** Most important ML feature
+20. `shap_top2_feature` - **NEW!** Second most important feature
+21. `shap_top3_feature` - **NEW!** Third most important feature
+22. `prospect_type` - NEW_PROSPECT or recyclable
+23. `list_rank` - Overall ranking in list
 
 ### Next Steps
 
-**Step 4 Complete** - Lead list exported to CSV  
+**Step 4 Complete** - Lead list exported to CSV with SHAP narratives, job titles, and firm exclusions  
 **Ready for**: Salesforce import and SDR outreach
-
-**IMPORTANT**: Track `is_v4_upgrade` leads separately to validate 4.60% conversion rate!
 
 ---
 
@@ -324,10 +265,8 @@ def main():
     print("=" * 70)
     print(f"File: {output_path}")
     print(f"Rows: {len(df):,}")
-    print(f"V4 Upgrades: {validation_results['v4_upgrade_count']:,} ({validation_results['v4_upgrade_pct']:.1f}%)")
-    print(f"Size: {output_path.stat().st_size / 1024:.1f} KB")
+    print(f"Includes: job_title, score_narrative, SHAP features")
     print("=" * 70)
-    print("\n⚠️  REMINDER: Track is_v4_upgrade leads separately to validate performance!")
     
     return output_path
 

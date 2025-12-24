@@ -1,44 +1,50 @@
 -- ============================================================================
 -- JANUARY 2026 LEAD LIST GENERATOR (V3.2.5 + V4 UPGRADE PATH)
--- Model: V3.2.5 + V4 XGBoost Hybrid v2
+-- Version: 2.0 with SHAP Narratives, Job Titles, and Firm Exclusions
 -- 
--- UPDATED HYBRID APPROACH (Based on V3 vs V4 Investigation):
--- - V3 Rules: Tier assignment (T1A, T1B, T1, T2, T3, T4, T5) - VALIDATED
--- - V4 XGBoost: UPGRADE PATH for STANDARD tier leads with V4 >= 80th percentile
--- 
--- KEY CHANGES FROM PREVIOUS VERSION:
--- 1. REMOVED: V4 deprioritization filter (not adding value within V3 tiers)
--- 2. ADDED: V4 upgrade path (STANDARD leads with V4 >= 80% convert at 4.60%)
--- 3. ADDED: is_v4_upgrade flag for tracking
+-- FEATURES:
+-- - V3 Rules: Tier assignment with rich human-readable narratives
+-- - V4 XGBoost: Upgrade path with SHAP-based narratives
+-- - Job Titles: Included in output for SDR context
+-- - Firm Exclusions: Savvy Wealth and Ritholtz excluded
 --
--- INVESTIGATION FINDINGS:
--- - T1 converts at 7.41% vs T2 at 3.20% (V3 tier ordering validated)
--- - V4 AUC-ROC (0.6141) > V3 AUC-ROC (0.5095) - V4 better at prediction
--- - STANDARD leads with V4 >= 80% convert at 4.60% (1.42x baseline)
--- - V4 deprioritization was NOT adding value (90% of V3 leads scored in top 10%)
---
--- EXPECTED IMPROVEMENT: +6-12% conversion rate by including V4 upgraded leads
+-- FIRM EXCLUSIONS:
+-- - Savvy Advisors, Inc. (CRD 318493) - Internal firm
+-- - Ritholtz Wealth Management (CRD 168652) - Partner firm
 -- ============================================================================
 
 CREATE OR REPLACE TABLE `savvy-gtm-analytics.ml_features.january_2026_lead_list_v4` AS
 
 WITH 
 -- ============================================================================
--- A. EXCLUSIONS (Wirehouses + Insurance)
+-- A. EXCLUSIONS (Wirehouses + Insurance + Specific Firms)
 -- ============================================================================
 excluded_firms AS (
     SELECT firm_pattern FROM UNNEST([
+        -- Wirehouses
         '%J.P. MORGAN%', '%MORGAN STANLEY%', '%MERRILL%', '%WELLS FARGO%', 
         '%UBS %', '%UBS,%', '%EDWARD JONES%', '%AMERIPRISE%', 
         '%NORTHWESTERN MUTUAL%', '%PRUDENTIAL%', '%RAYMOND JAMES%',
         '%FIDELITY%', '%SCHWAB%', '%VANGUARD%', '%GOLDMAN SACHS%', '%CITIGROUP%',
         '%LPL FINANCIAL%', '%COMMONWEALTH%', '%CETERA%', '%CAMBRIDGE%',
         '%OSAIC%', '%PRIMERICA%',
+        -- Insurance
         '%STATE FARM%', '%ALLSTATE%', '%NEW YORK LIFE%', '%NYLIFE%',
         '%TRANSAMERICA%', '%FARM BUREAU%', '%NATIONWIDE%',
         '%LINCOLN FINANCIAL%', '%MASS MUTUAL%', '%MASSMUTUAL%',
-        '%INSURANCE%'
+        '%INSURANCE%',
+        -- Specific firm name exclusions (backup for CRD exclusion)
+        '%SAVVY WEALTH%', '%SAVVY ADVISORS%',
+        '%RITHOLTZ%'
     ]) as firm_pattern
+),
+
+-- NEW: Specific CRD exclusions for Savvy and Ritholtz
+excluded_firm_crds AS (
+    SELECT firm_crd FROM UNNEST([
+        318493,  -- Savvy Advisors, Inc.
+        168652   -- Ritholtz Wealth Management
+    ]) as firm_crd
 ),
 
 -- ============================================================================
@@ -85,7 +91,7 @@ recyclable_lead_ids AS (
 ),
 
 -- ============================================================================
--- D. ADVISOR EMPLOYMENT HISTORY (For mobility metrics)
+-- D. ADVISOR EMPLOYMENT HISTORY
 -- ============================================================================
 advisor_moves AS (
     SELECT 
@@ -100,7 +106,7 @@ advisor_moves AS (
 ),
 
 -- ============================================================================
--- E. FIRM HEADCOUNT (from ria_contacts_current)
+-- E. FIRM HEADCOUNT
 -- ============================================================================
 firm_headcount AS (
     SELECT 
@@ -112,7 +118,7 @@ firm_headcount AS (
 ),
 
 -- ============================================================================
--- F. FIRM DEPARTURES (12 months)
+-- F. FIRM DEPARTURES
 -- ============================================================================
 firm_departures AS (
     SELECT
@@ -125,7 +131,7 @@ firm_departures AS (
 ),
 
 -- ============================================================================
--- G. FIRM ARRIVALS (12 months) - from ria_contacts_current
+-- G. FIRM ARRIVALS
 -- ============================================================================
 firm_arrivals AS (
     SELECT
@@ -157,7 +163,7 @@ firm_metrics AS (
 ),
 
 -- ============================================================================
--- I. BASE PROSPECT DATA
+-- I. BASE PROSPECT DATA (with firm CRD exclusions)
 -- ============================================================================
 base_prospects AS (
     SELECT 
@@ -173,15 +179,20 @@ base_prospects AS (
         DATE_DIFF(CURRENT_DATE(), c.PRIMARY_FIRM_START_DATE, MONTH) as tenure_months,
         DATE_DIFF(CURRENT_DATE(), c.PRIMARY_FIRM_START_DATE, YEAR) as tenure_years,
         CASE WHEN sf.crd IS NULL THEN 'NEW_PROSPECT' ELSE 'IN_SALESFORCE' END as prospect_type,
-        sf.lead_id as existing_lead_id
+        sf.lead_id as existing_lead_id,
+        -- JOB TITLE (NEW!)
+        c.TITLE_NAME as job_title
     FROM `savvy-gtm-analytics.FinTrx_data_CA.ria_contacts_current` c
     LEFT JOIN salesforce_crds sf ON c.RIA_CONTACT_CRD_ID = sf.crd
     WHERE c.CONTACT_FIRST_NAME IS NOT NULL AND c.CONTACT_LAST_NAME IS NOT NULL
       AND c.PRIMARY_FIRM_START_DATE IS NOT NULL AND c.PRIMARY_FIRM_NAME IS NOT NULL
       AND c.PRIMARY_FIRM IS NOT NULL
       AND c.PRODUCING_ADVISOR = TRUE
+      -- Exclude by firm name pattern
       AND NOT EXISTS (SELECT 1 FROM excluded_firms ef WHERE UPPER(c.PRIMARY_FIRM_NAME) LIKE ef.firm_pattern)
-      -- Title exclusions (V3.2.1)
+      -- NEW: Exclude by firm CRD (Savvy 318493, Ritholtz 168652)
+      AND SAFE_CAST(c.PRIMARY_FIRM AS INT64) NOT IN (SELECT firm_crd FROM excluded_firm_crds)
+      -- Title exclusions
       AND NOT (
           UPPER(c.TITLE_NAME) LIKE '%FINANCIAL SOLUTIONS ADVISOR%'
           OR UPPER(c.TITLE_NAME) LIKE '%PARAPLANNER%'
@@ -229,7 +240,6 @@ enriched_prospects AS (
         -- LinkedIn
         c.LINKEDIN_PROFILE_URL as linkedin_url,
         CASE WHEN c.LINKEDIN_PROFILE_URL IS NOT NULL AND TRIM(c.LINKEDIN_PROFILE_URL) != '' THEN 1 ELSE 0 END as has_linkedin,
-        c.TITLE_NAME as fintrx_title,
         c.PRODUCING_ADVISOR as producing_advisor
         
     FROM base_prospects bp
@@ -240,45 +250,36 @@ enriched_prospects AS (
 ),
 
 -- ============================================================================
--- J2. JOIN V4 SCORES (V4 XGBoost Integration)
+-- J2. JOIN V4 SCORES + SHAP NARRATIVES
 -- ============================================================================
 v4_enriched AS (
     SELECT 
         ep.*,
         COALESCE(v4.v4_score, 0.5) as v4_score,
         COALESCE(v4.v4_percentile, 50) as v4_percentile,
-        COALESCE(v4.v4_deprioritize, FALSE) as v4_deprioritize
+        COALESCE(v4.v4_deprioritize, FALSE) as v4_deprioritize,
+        COALESCE(v4.v4_upgrade_candidate, FALSE) as v4_upgrade_candidate,
+        -- SHAP data for narrative generation
+        v4.shap_top1_feature,
+        v4.shap_top1_value,
+        v4.shap_top2_feature,
+        v4.shap_top2_value,
+        v4.shap_top3_feature,
+        v4.shap_top3_value,
+        v4.v4_narrative as v4_shap_narrative
     FROM enriched_prospects ep
     LEFT JOIN `savvy-gtm-analytics.ml_features.v4_prospect_scores` v4 
         ON ep.crd = v4.crd
 ),
 
 -- ============================================================================
--- K. APPLY V3.2 TIER LOGIC (uses v4_enriched)
+-- K. APPLY V3.2 TIER LOGIC WITH NARRATIVES
 -- ============================================================================
 scored_prospects AS (
     SELECT 
         ep.*,
         
-        -- Tier qualification path
-        CASE 
-            WHEN (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years >= 5 AND firm_net_change_12mo < 0 AND has_cfp = 1 AND is_wirehouse = 0) THEN 'TIER_1A_CFP'
-            WHEN (((tenure_years BETWEEN 1 AND 3 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND firm_rep_count <= 50 AND is_wirehouse = 0)
-                  OR (tenure_years BETWEEN 1 AND 3 AND firm_rep_count <= 10 AND is_wirehouse = 0)
-                  OR (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND is_wirehouse = 0))
-                  AND has_series_65_only = 1) THEN 'TIER_1B_SERIES65'
-            WHEN (tenure_years BETWEEN 1 AND 3 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND firm_rep_count <= 50 AND is_wirehouse = 0) THEN 'TIER_1_PATH_1A'
-            WHEN (tenure_years BETWEEN 1 AND 3 AND firm_rep_count <= 10 AND is_wirehouse = 0) THEN 'TIER_1_PATH_1B'
-            WHEN (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND is_wirehouse = 0) THEN 'TIER_1_PATH_1C'
-            WHEN (is_hv_wealth_title = 1 AND firm_net_change_12mo < 0 AND is_wirehouse = 0) THEN 'TIER_1F_HV_WEALTH'
-            WHEN (num_prior_firms >= 3 AND industry_tenure_years >= 5) THEN 'TIER_2_PROVEN_MOVER'
-            WHEN (firm_net_change_12mo BETWEEN -10 AND -1 AND industry_tenure_years >= 5) THEN 'TIER_3_MODERATE_BLEEDER'
-            WHEN (industry_tenure_years >= 20 AND tenure_years BETWEEN 1 AND 4) THEN 'TIER_4_EXPERIENCED_MOVER'
-            WHEN (firm_net_change_12mo <= -10 AND industry_tenure_years >= 5) THEN 'TIER_5_HEAVY_BLEEDER'
-            ELSE 'STANDARD'
-        END as tier_qualification_path,
-        
-        -- Score tier (with V4 upgrade logic)
+        -- Score tier
         CASE 
             WHEN (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years >= 5 AND firm_net_change_12mo < 0 AND has_cfp = 1 AND is_wirehouse = 0) THEN 'TIER_1A_PRIME_MOVER_CFP'
             WHEN (((tenure_years BETWEEN 1 AND 3 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND firm_rep_count <= 50 AND is_wirehouse = 0)
@@ -296,7 +297,7 @@ scored_prospects AS (
             ELSE 'STANDARD'
         END as score_tier,
         
-        -- Priority rank (V4 upgrades rank as 5.5 - between T2 and T3)
+        -- Priority rank
         CASE 
             WHEN (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years >= 5 AND firm_net_change_12mo < 0 AND has_cfp = 1 AND is_wirehouse = 0) THEN 1
             WHEN (((tenure_years BETWEEN 1 AND 3 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND firm_rep_count <= 50 AND is_wirehouse = 0)
@@ -314,7 +315,7 @@ scored_prospects AS (
             ELSE 99
         END as priority_rank,
         
-        -- Expected conversion rate (V4 upgrades get 4.60% based on historical data)
+        -- Expected conversion rate
         CASE 
             WHEN (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years >= 5 AND firm_net_change_12mo < 0 AND has_cfp = 1 AND is_wirehouse = 0) THEN 0.087
             WHEN (((tenure_years BETWEEN 1 AND 3 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND firm_rep_count <= 50 AND is_wirehouse = 0)
@@ -332,21 +333,46 @@ scored_prospects AS (
             ELSE 0.025
         END as expected_conversion_rate,
         
-        -- Score narrative
+        -- V3 TIER NARRATIVES
         CASE 
-            WHEN (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years >= 5 AND firm_net_change_12mo < 0 AND has_cfp = 1 AND is_wirehouse = 0) 
-                THEN 'CFP at bleeding firm with 1-4 year tenure - highest priority'
+            WHEN (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years >= 5 AND firm_net_change_12mo < 0 AND has_cfp = 1 AND is_wirehouse = 0) THEN
+                CONCAT(first_name, ' is a CFP holder at ', firm_name, ', which has lost ', CAST(ABS(firm_net_change_12mo) AS STRING), 
+                       ' advisors (net) in the past year. CFP designation indicates book ownership and client relationships. ',
+                       'With ', CAST(tenure_years AS STRING), ' years at the firm and ', CAST(industry_tenure_years AS STRING), 
+                       ' years of experience, this is an ULTRA-PRIORITY lead. Tier 1A: 8.7% expected conversion.')
             WHEN (((tenure_years BETWEEN 1 AND 3 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND firm_rep_count <= 50 AND is_wirehouse = 0)
                   OR (tenure_years BETWEEN 1 AND 3 AND firm_rep_count <= 10 AND is_wirehouse = 0)
                   OR (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND is_wirehouse = 0))
-                  AND has_series_65_only = 1) 
-                THEN 'Series 65 only advisor meeting Tier 1 criteria'
+                  AND has_series_65_only = 1) THEN
+                CONCAT(first_name, ' is a fee-only RIA advisor (Series 65 only) at ', firm_name, 
+                       '. Pure RIA advisors have no broker-dealer ties, making transitions easier. ',
+                       'Tier 1B: Prime Mover (Pure RIA) with 7.9% expected conversion.')
             WHEN ((tenure_years BETWEEN 1 AND 3 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND firm_rep_count <= 50 AND is_wirehouse = 0)
                   OR (tenure_years BETWEEN 1 AND 3 AND firm_rep_count <= 10 AND is_wirehouse = 0)
-                  OR (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND is_wirehouse = 0)) 
-                THEN 'Prime mover - short tenure at small/bleeding firm'
-            ELSE 'Scored lead'
-        END as score_narrative
+                  OR (tenure_years BETWEEN 1 AND 4 AND industry_tenure_years BETWEEN 5 AND 15 AND firm_net_change_12mo < 0 AND is_wirehouse = 0)) THEN
+                CONCAT(first_name, ' has been at ', firm_name, ' for ', CAST(tenure_years AS STRING), ' years with ', 
+                       CAST(industry_tenure_years AS STRING), ' years of experience. ',
+                       CASE WHEN firm_net_change_12mo < 0 THEN CONCAT('The firm has lost ', CAST(ABS(firm_net_change_12mo) AS STRING), ' advisors. ') ELSE '' END,
+                       'Prime Mover tier with 7.1% expected conversion.')
+            WHEN (is_hv_wealth_title = 1 AND firm_net_change_12mo < 0 AND is_wirehouse = 0) THEN
+                CONCAT(first_name, ' holds a High-Value Wealth title at ', firm_name, ', which has lost ', 
+                       CAST(ABS(firm_net_change_12mo) AS STRING), ' advisors. Tier 1F: HV Wealth (Bleeding) with 6.5% expected conversion.')
+            WHEN (num_prior_firms >= 3 AND industry_tenure_years >= 5) THEN
+                CONCAT(first_name, ' has worked at ', CAST(num_prior_firms + 1 AS STRING), ' different firms over ', 
+                       CAST(industry_tenure_years AS STRING), ' years. History of mobility demonstrates willingness to change. ',
+                       'Proven Mover tier with 5.2% expected conversion.')
+            WHEN (firm_net_change_12mo BETWEEN -10 AND -1 AND industry_tenure_years >= 5) THEN
+                CONCAT(firm_name, ' has experienced moderate advisor departures (net change: ', CAST(firm_net_change_12mo AS STRING), '). ',
+                       first_name, ' is likely hearing about opportunities from departing colleagues. Moderate Bleeder tier: 4.4% expected conversion.')
+            WHEN (industry_tenure_years >= 20 AND tenure_years BETWEEN 1 AND 4) THEN
+                CONCAT(first_name, ' is a ', CAST(industry_tenure_years AS STRING), '-year veteran who recently moved to ', firm_name, 
+                       '. A veteran who recently changed firms will move for the right opportunity. Experienced Mover: 4.1% expected conversion.')
+            WHEN (firm_net_change_12mo <= -10 AND industry_tenure_years >= 5) THEN
+                CONCAT(firm_name, ' is losing ', CAST(ABS(firm_net_change_12mo) AS STRING), ' advisors (net). ', first_name, 
+                       ' is watching the workplace destabilize. Heavy Bleeder tier: 3.8% expected conversion.')
+            ELSE
+                CONCAT(first_name, ' at ', firm_name, ' - checking for V4 upgrade eligibility.')
+        END as v3_score_narrative
         
     FROM v4_enriched ep
 ),
@@ -376,37 +402,80 @@ ranked_prospects AS (
 ),
 
 -- ============================================================================
--- M. APPLY FIRM DIVERSITY CAP (REMOVED V4 DEPRIORITIZATION - NOT ADDING VALUE)
+-- M. APPLY FIRM DIVERSITY CAP
 -- ============================================================================
 diversity_filtered AS (
     SELECT * FROM ranked_prospects
     WHERE rank_within_firm <= 50 
       AND source_priority < 99
-    -- REMOVED: AND v4_deprioritize = FALSE (investigation showed this wasn't helping)
 ),
 
 -- ============================================================================
 -- N. APPLY TIER QUOTAS + V4 UPGRADE PATH
--- V4 Upgrade: STANDARD leads with V4 >= 80th percentile convert at 4.60%
 -- ============================================================================
 tier_limited AS (
     SELECT 
         df.*,
-        -- Flag V4 upgraded leads for tracking
+        -- V4 upgrade flag
         CASE 
             WHEN df.score_tier = 'STANDARD' AND df.v4_percentile >= 80 THEN 1 
             ELSE 0 
         END as is_v4_upgrade,
-        -- Override tier for V4 upgrades
+        -- Final tier
         CASE 
             WHEN df.score_tier = 'STANDARD' AND df.v4_percentile >= 80 THEN 'V4_UPGRADE'
             ELSE df.score_tier 
         END as final_tier,
-        -- Override expected rate for V4 upgrades (4.60% based on historical data)
+        -- Final expected rate
         CASE 
             WHEN df.score_tier = 'STANDARD' AND df.v4_percentile >= 80 THEN 0.046
             ELSE df.expected_conversion_rate 
         END as final_expected_rate,
+        -- FINAL NARRATIVE: V3 or V4 SHAP
+        -- Always use SQL-generated narrative for V4 upgrades (has all feature names properly handled)
+        CASE 
+            WHEN df.score_tier = 'STANDARD' AND df.v4_percentile >= 80 THEN
+                CONCAT(
+                    'V4 Model Upgrade: ', df.first_name, ' at ', df.firm_name, 
+                    ' identified as high-potential lead (V4 score: ', CAST(ROUND(df.v4_score, 2) AS STRING), 
+                    ', ', CAST(df.v4_percentile AS STRING), 'th percentile). ',
+                    -- Include the SHAP-based explanation
+                    CASE 
+                        WHEN df.shap_top1_feature = 'short_tenure_x_high_mobility' THEN 
+                            'Key factors: This advisor is relatively new at their current firm AND has a history of changing firms - a strong signal they may move again. '
+                        WHEN df.shap_top1_feature = 'mobility_x_heavy_bleeding' THEN 
+                            'Key factors: This advisor has demonstrated career mobility AND works at a firm losing advisors - a powerful combination. '
+                        WHEN df.shap_top1_feature = 'mobility_tier' THEN 
+                            'Key factor: This advisor has demonstrated willingness to change firms in the past. '
+                        WHEN df.shap_top1_feature = 'firm_stability_tier' THEN 
+                            'Key factor: This advisor works at a firm experiencing advisor departures. '
+                        WHEN df.shap_top1_feature = 'tenure_bucket' THEN 
+                            'Key factor: This advisor has favorable tenure at their current firm (1-4 years). '
+                        WHEN df.shap_top1_feature = 'experience_bucket' THEN 
+                            'Key factor: This advisor has significant industry experience with a portable book. '
+                        WHEN df.shap_top1_feature = 'is_broker_protocol' THEN 
+                            'Key factor: Their firm participates in the Broker Protocol, making transitions smoother. '
+                        WHEN df.shap_top1_feature = 'firm_net_change_12mo' THEN 
+                            'Key factor: Their firm is losing advisors, creating workplace instability. '
+                        WHEN df.shap_top1_feature = 'firm_rep_count_at_contact' THEN 
+                            'Key factor: Works at a smaller firm with more autonomy. '
+                        WHEN df.shap_top1_feature = 'is_wirehouse' THEN 
+                            'Key factor: Not at a wirehouse, fewer restrictions on moving. '
+                        WHEN df.shap_top1_feature = 'has_linkedin' THEN 
+                            'Key factor: Verified LinkedIn profile available for outreach. '
+                        WHEN df.shap_top1_feature = 'has_email' THEN 
+                            'Key factor: Verified email contact information available. '
+                        WHEN df.shap_top1_feature = 'has_firm_data' THEN 
+                            'Key factor: Complete firm data available for analysis. '
+                        WHEN df.shap_top1_feature = 'is_experience_missing' THEN 
+                            'Key factor: Complete experience data available. '
+                        ELSE 
+                            CONCAT('Key factor: ', COALESCE(REPLACE(df.shap_top1_feature, '_', ' '), 'ML-identified pattern'), '. ')
+                    END,
+                    'Historical conversion: 4.60% (1.42x baseline). Track as V4 Upgrade.'
+                )
+            ELSE df.v3_score_narrative
+        END as score_narrative,
         ROW_NUMBER() OVER (
             PARTITION BY 
                 CASE 
@@ -422,8 +491,8 @@ tier_limited AS (
                 df.crd
         ) as tier_rank
     FROM diversity_filtered df
-    WHERE df.score_tier != 'STANDARD'  -- Original V3 tiers
-       OR (df.score_tier = 'STANDARD' AND df.v4_percentile >= 80)  -- V4 UPGRADE PATH
+    WHERE df.score_tier != 'STANDARD'
+       OR (df.score_tier = 'STANDARD' AND df.v4_percentile >= 80)
 ),
 
 -- ============================================================================
@@ -440,7 +509,7 @@ linkedin_prioritized AS (
                     WHEN 'TIER_1_PRIME_MOVER' THEN 3
                     WHEN 'TIER_1F_HV_WEALTH_BLEEDER' THEN 4
                     WHEN 'TIER_2_PROVEN_MOVER' THEN 5
-                    WHEN 'V4_UPGRADE' THEN 6  -- V4 upgrades rank between T2 and T3
+                    WHEN 'V4_UPGRADE' THEN 6
                     WHEN 'TIER_3_MODERATE_BLEEDER' THEN 7
                     WHEN 'TIER_4_EXPERIENCED_MOVER' THEN 8
                     WHEN 'TIER_5_HEAVY_BLEEDER' THEN 9
@@ -474,7 +543,6 @@ linkedin_prioritized AS (
         END as no_linkedin_rank
     FROM tier_limited tl
     WHERE 
-        -- Original tier quotas
         (final_tier = 'TIER_1A_PRIME_MOVER_CFP' AND tier_rank <= 50)
         OR (final_tier = 'TIER_1B_PRIME_MOVER_SERIES65' AND tier_rank <= 60)
         OR (final_tier = 'TIER_1_PRIME_MOVER' AND tier_rank <= 300)
@@ -483,7 +551,6 @@ linkedin_prioritized AS (
         OR (final_tier = 'TIER_3_MODERATE_BLEEDER' AND tier_rank <= 300)
         OR (final_tier = 'TIER_4_EXPERIENCED_MOVER' AND tier_rank <= 300)
         OR (final_tier = 'TIER_5_HEAVY_BLEEDER' AND tier_rank <= 1500)
-        -- V4 UPGRADE quota: up to 500 leads (based on ~1,174 historical leads at 4.60%)
         OR (final_tier = 'V4_UPGRADE' AND tier_rank <= 500)
 )
 
@@ -499,7 +566,10 @@ SELECT
     phone,
     linkedin_url,
     has_linkedin,
-    fintrx_title,
+    
+    -- JOB TITLE (NEW!)
+    job_title,
+    
     producing_advisor,
     firm_name,
     firm_crd,
@@ -513,13 +583,15 @@ SELECT
     industry_tenure_years,
     num_prior_firms,
     moves_3yr,
-    score_tier as original_v3_tier,  -- Keep original V3 tier for reference
-    final_tier as score_tier,  -- Use final tier (includes V4_UPGRADE)
-    tier_qualification_path,
+    score_tier as original_v3_tier,
+    final_tier as score_tier,
     priority_rank,
     final_expected_rate as expected_conversion_rate,
     ROUND(final_expected_rate * 100, 2) as expected_rate_pct,
+    
+    -- SCORE NARRATIVE (V3 rules or V4 SHAP)
     score_narrative,
+    
     has_cfp,
     has_series_65_only,
     has_series_7,
@@ -531,16 +603,17 @@ SELECT
         ELSE 'Recyclable - 180+ days no contact'
     END as lead_source_description,
     
-    -- V4 Score columns
+    -- V4 columns
     ROUND(v4_score, 4) as v4_score,
     v4_percentile,
-    
-    -- V4 UPGRADE FLAG (NEW - for tracking performance)
     is_v4_upgrade,
     CASE 
         WHEN is_v4_upgrade = 1 THEN 'V4 Upgrade (STANDARD with V4 >= 80%)'
         ELSE 'V3 Tier Qualified'
     END as v4_status,
+    shap_top1_feature,
+    shap_top2_feature,
+    shap_top3_feature,
     
     overall_rank as list_rank,
     CURRENT_TIMESTAMP() as generated_at
