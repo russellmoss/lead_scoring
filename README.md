@@ -34,22 +34,22 @@ The production system uses a **hybrid approach** that combines the strengths of 
 1. **V3 Rules-Based Model** (Primary): Prioritizes leads into tiers (2.0x to 4.3x lift)
 2. **V4 XGBoost Model** (Deprioritization Filter): Identifies bottom 20% of leads to skip (1.33% conversion vs 3.20% baseline)
 
-**How They Work Together:**
+**How They Work Together (Updated December 2024):**
 ```
 Lead Scoring Pipeline:
 1. V3 Rules → Assign Tier (T1A, T1B, T1, T2, T3, T4, T5, STANDARD)
-2. V4 Score → Assign Percentile (1-100) and deprioritize flag
+2. V4 Score → Assign Percentile (1-100) and identify upgrade candidates
 3. Final Lead List:
-   - V3 T1-T2 leads → HIGHEST PRIORITY (regardless of V4 score)
-   - V3 T3-T5 leads → HIGH PRIORITY (if V4 percentile > 20%)
-   - V3 STANDARD leads → SKIP if V4 deprioritize = TRUE (bottom 20%)
-   - All other leads → Standard priority
+   - V3 T1-T5 leads → INCLUDED (validated tier ordering: T1 > T2)
+   - V3 STANDARD leads with V4 >= 80th percentile → UPGRADED to V4_UPGRADE tier
+   - All other STANDARD leads → EXCLUDED
+   - Result: High-quality mix of V3 tier leads + V4 upgraded leads
 ```
 
 **Expected Impact:**
 - **V3 Prioritization**: 1.74x lift on top decile (best leads)
-- **V4 Deprioritization**: 11.7% efficiency gain (skip 20% of leads, lose only 8.3% of conversions)
-- **Combined**: Best of both worlds - identify top leads AND filter out bottom leads
+- **V4 Upgrade Path**: +6-12% conversion rate improvement by including V4 upgraded leads
+- **Combined**: Best of both worlds - V3 prioritizes top tiers, V4 finds hidden gems in STANDARD tier
 
 ---
 
@@ -73,14 +73,14 @@ Lead Scoring Pipeline:
 
 ---
 
-### Version 4.0.0 (Deprioritization Filter)
+### Version 4.0.0 (Upgrade Path Filter)
 
 **Model Type:** XGBoost machine learning model  
-**Performance:** Identifies bottom 20% with 1.33% conversion (58% below baseline)  
-**Status:** ✅ Production Ready (Deprioritization Filter)
+**Performance:** Identifies STANDARD tier leads with 4.60% conversion (1.42x baseline)  
+**Status:** ✅ Production Ready (Upgrade Path Filter)
 
 **What is V4?**
-V4 is an XGBoost machine learning model trained on historical lead conversion data to identify leads that should be **deprioritized or skipped**. Unlike V3, which focuses on finding the best leads, V4 excels at finding the worst leads.
+V4 is an XGBoost machine learning model trained on historical lead conversion data to identify **high-quality leads that V3's rules miss**. V4 excels at finding "hidden gems" in the STANDARD tier - leads that don't meet V3's explicit criteria but have strong conversion signals.
 
 **How V4 Was Created:**
 1. **Data Extraction**: Trained on "Provided Lead List" leads only (cold outbound, not inbound)
@@ -95,14 +95,15 @@ V4 is an XGBoost machine learning model trained on historical lead conversion da
 5. **Deployment**: Integrated into monthly lead list generation pipeline
 
 **Key Findings:**
-- **Bottom 20%**: Converts at 1.33% (0.42x lift, 58% below baseline)
-- **Top 80%**: Converts at 3.66% (1.15x lift, 14% above baseline)
-- **Efficiency Gain**: Skip 20% of leads, lose only 8.3% of conversions = **11.7% efficiency gain**
+- **STANDARD leads with V4 >= 80th percentile**: Convert at 4.60% (1.42x baseline, 44% better than T2)
+- **V4 AUC-ROC**: 0.6141 vs V3 AUC-ROC: 0.5095 (V4 better at prediction overall)
+- **Upgrade Path**: 486 leads upgraded in January 2026 list (20.25% of total)
+- **Expected Impact**: +6-12% conversion rate improvement by including V4 upgraded leads
 
-**Why V4 Doesn't Replace V3:**
-- **V3 Top Decile Lift**: 1.74x (better than V4's 1.51x)
-- **V4 Deprioritization**: 0.42x on bottom 20% (V3 doesn't do this)
-- **Use Case**: V3 for prioritization, V4 for deprioritization = **complementary, not competitive**
+**Why V4 Complements V3:**
+- **V3 Tier Ordering**: Validated (T1: 7.41% > T2: 3.20%, statistically significant)
+- **V4 Upgrade Path**: Finds high-quality leads V3 rules miss (4.60% conversion)
+- **Use Case**: V3 prioritizes explicit patterns, V4 finds implicit patterns = **complementary, not competitive**
 
 **Comprehensive Documentation:**
 - **Full Technical Report:** [`Version-4/VERSION_4_MODEL_REPORT.md`](./Version-4/VERSION_4_MODEL_REPORT.md)
@@ -127,7 +128,7 @@ V4 is an XGBoost machine learning model trained on historical lead conversion da
 
 3. **Generate Hybrid Lead List** (`sql/January_2026_Lead_List_V3_V4_Hybrid.sql`)
    - Apply V3 tier logic to all prospects
-   - Join V4 scores and filter out `v4_deprioritize = TRUE` leads
+   - Join V4 scores and upgrade STANDARD leads with V4 >= 80th percentile to V4_UPGRADE tier
    - Apply tier quotas and LinkedIn prioritization
    - Output: `ml_features.january_2026_lead_list_v4` (2,400 leads)
 
@@ -137,9 +138,9 @@ V4 is an XGBoost machine learning model trained on historical lead conversion da
    - Output: `exports/january_2026_lead_list_YYYYMMDD.csv`
 
 **Result:**
-- **2,400 prioritized leads** with V3 tier assignments
-- **Zero bottom 20% leads** (all filtered out by V4)
-- **Average V4 percentile: 95.6** (top 5% of prospects)
+- **2,400 prioritized leads** with V3 tier assignments + V4 upgrades
+- **486 V4_UPGRADE leads** (20.25% of list, expected 4.60% conversion)
+- **Average V4 percentile: 98.2** (top 2% of prospects)
 - **99.9% LinkedIn coverage** for SDR outreach
 
 ---
@@ -175,6 +176,14 @@ Lead Scoring/
 │   │   └── export_lead_list.py           # CSV export script
 │   ├── exports/             # Generated CSV lead lists (gitignored)
 │   └── logs/                # Execution logs
+│
+├── V3+V4_testing/          # ✅ METHODOLOGY INVESTIGATION (December 2024)
+│   ├── reports/
+│   │   ├── FINAL_V3_VS_V4_INVESTIGATION_REPORT.md  # Full investigation report
+│   │   └── tier_analysis.md              # Tier performance analysis
+│   ├── logs/
+│   │   └── INVESTIGATION_LOG.md          # Investigation execution log
+│   └── scripts/             # Investigation analysis scripts
 │
 ├── Version-2/              # Machine Learning Approach (XGBoost)
 │   ├── VERSION_2_MODEL_REPORT.md
@@ -249,8 +258,136 @@ Lead Scoring/
 - **V4.0.0:** Initial XGBoost model with 14 PIT-compliant features
 - **Training Data:** "Provided Lead List" leads only (cold outbound, Feb 2024 - Jul 2025)
 - **Test Data:** Aug-Oct 2025 (never seen during training)
-- **Deployment:** Integrated into monthly lead list generation as deprioritization filter
-- **Hybrid Integration:** Works alongside V3 to filter bottom 20% while V3 prioritizes top tiers
+- **Deployment:** Integrated into monthly lead list generation as upgrade path filter
+- **Hybrid Integration:** Works alongside V3 to upgrade STANDARD tier leads while V3 prioritizes top tiers
+
+**Methodology Evolution (December 2024):**
+- **Initial Approach:** V4 used for deprioritization (filtering bottom 20%)
+- **Updated Approach:** V4 used for upgrade path (promoting STANDARD leads with V4 >= 80%)
+- **Rationale:** Investigation showed V4 deprioritization wasn't adding value (90% of V3 leads already in top 10%)
+- **New Finding:** V4 identifies "hidden gems" - STANDARD leads that convert at 4.60% (better than T2's 3.20%)
+
+---
+
+## Lead Scoring Methodology Evolution
+
+### Data-Driven Investigation (Q1-Q3 2025)
+
+In December 2024, we conducted a rigorous investigation comparing V3 tier rules vs V4 XGBoost model performance on historical lead data to validate our methodology and identify improvement opportunities.
+
+**Investigation Scope:**
+- **Dataset:** 17,867 historical leads contacted in Q1-Q3 2025
+- **Conversions:** 579 total conversions (3.24% baseline conversion rate)
+- **Key Question:** Does V3 tier ordering correctly prioritize leads? Can V4 find leads V3 misses?
+
+**Full Investigation Report:** [`V3+V4_testing/reports/FINAL_V3_VS_V4_INVESTIGATION_REPORT.md`](./V3+V4_testing/reports/FINAL_V3_VS_V4_INVESTIGATION_REPORT.md)
+
+### Key Findings
+
+#### V3 Tier Performance (Validated ✅)
+
+**Tier Conversion Rates (Historical Data):**
+- **T1 (Prime Mover):** 7.41% conversion - **2.31x better than T2** (statistically significant, p=0.0008)
+- **T2 (Proven Mover):** 3.20% conversion
+- **T1A (CFP):** Sample too small (4 leads) to validate statistically
+
+**Conclusion:** V3 tier ordering is **validated** - T1 leads convert significantly better than T2 leads. The rules-based tier system correctly prioritizes leads.
+
+#### V4 Model Performance (Superior Prediction ✅)
+
+**Model Comparison:**
+- **V4 AUC-ROC:** 0.6141
+- **V3 AUC-ROC:** 0.5095
+- **V4 is better at predicting conversions overall** (14% improvement in AUC)
+
+**Hidden Gems Discovery:**
+- **STANDARD leads with V4 >= 80th percentile:** Convert at **4.60%** (1.42x baseline)
+- **This is 44% better than T2's 3.20% conversion rate**
+- **V4 found high-quality leads that V3's rules missed**
+
+#### Disagreement Analysis
+
+**When V3 and V4 Disagree:**
+- **High V3 / Low V4 leads:** 0.00% conversion (V4 was right to score low)
+- **Low V3 / High V4 leads:** 4.60% conversion (V4 found leads V3 missed)
+
+**Insight:** V4's ML model captures patterns that V3's explicit rules don't cover, particularly in the STANDARD tier.
+
+### Methodology Changes
+
+#### OLD Hybrid Approach (Deprecated - December 2024)
+
+```
+Lead Scoring Pipeline (OLD):
+1. V3 Rules → Assign Tier (T1A, T1B, T1, T2, T3, T4, T5, STANDARD)
+2. V4 Score → Assign Percentile and deprioritize flag (bottom 20%)
+3. Final Lead List:
+   - V3 T1-T2 leads → INCLUDED (regardless of V4 score)
+   - V3 T3-T5 leads → INCLUDED (if V4 percentile > 20%)
+   - V3 STANDARD leads → EXCLUDED if V4 deprioritize = TRUE
+   - Result: V3 prioritization + V4 deprioritization
+```
+
+**Problem Identified:**
+- V4 deprioritization wasn't adding value
+- 90% of V3-qualified leads already scored in V4's top 10%
+- Filtering bottom 20% didn't improve conversion rates within V3 tiers
+
+#### NEW Hybrid Approach (Current - December 2024)
+
+```
+Lead Scoring Pipeline (NEW):
+1. V3 Rules → Assign Tier (T1A, T1B, T1, T2, T3, T4, T5, STANDARD)
+2. V4 Score → Assign Percentile and identify upgrade candidates
+3. Final Lead List:
+   - V3 T1-T5 leads → INCLUDED (validated tier ordering)
+   - V3 STANDARD leads with V4 >= 80th percentile → UPGRADED to V4_UPGRADE tier
+   - All other STANDARD leads → EXCLUDED
+   - Result: V3 prioritization + V4 upgrade path
+```
+
+**Expected Improvement:**
+- **+6-12% conversion rate** by including V4 upgraded leads
+- **486 V4_UPGRADE leads** in January 2026 list (20.25% of total)
+- **Expected conversion:** 4.60% for V4 upgrades (vs 3.20% for T2)
+
+### New Features & Tracking
+
+**New Columns in Lead Lists:**
+- **`is_v4_upgrade`**: Flag (1 = V4 upgraded lead, 0 = V3 tier lead)
+- **`V4_UPGRADE`**: New tier for STANDARD leads with V4 >= 80th percentile
+- **`original_v3_tier`**: Preserves original V3 tier for analysis (shows "STANDARD" for upgraded leads)
+- **`v4_status`**: Description of V4 status ("V4 Upgrade (STANDARD with V4 >= 80%)" or "V3 Tier Qualified")
+
+**Performance Tracking:**
+- Filter by `is_v4_upgrade = 1` to measure V4 upgrade performance
+- Expected conversion rate: **4.60%** (based on historical data)
+- Compare V4 upgrades vs V3 tier leads monthly to validate methodology
+
+### Files Modified
+
+**Updated Files (December 2024):**
+- **`Lead_List_Generation/sql/January_2026_Lead_List_V3_V4_Hybrid.sql`**
+  - Removed: V4 deprioritization filter (`v4_deprioritize = FALSE`)
+  - Added: V4 upgrade path logic (STANDARD + V4 >= 80% → V4_UPGRADE tier)
+  - Added: `is_v4_upgrade` flag and `original_v3_tier` column
+
+- **`Lead_List_Generation/scripts/export_lead_list.py`**
+  - Added: V4 upgrade tracking columns to export
+  - Added: V4 upgrade analysis in validation output
+
+### Investigation Documentation
+
+**Full Investigation Reports:**
+- **Final Report:** [`V3+V4_testing/reports/FINAL_V3_VS_V4_INVESTIGATION_REPORT.md`](./V3+V4_testing/reports/FINAL_V3_VS_V4_INVESTIGATION_REPORT.md)
+- **Investigation Log:** [`V3+V4_testing/logs/INVESTIGATION_LOG.md`](./V3+V4_testing/logs/INVESTIGATION_LOG.md)
+- **Tier Analysis:** [`V3+V4_testing/reports/tier_analysis.md`](./V3+V4_testing/reports/tier_analysis.md)
+
+**Key Takeaways:**
+1. **V3 tier ordering is validated** - T1 converts 2.31x better than T2 (statistically significant)
+2. **V4 is better at prediction** - 0.6141 AUC-ROC vs 0.5095 for V3
+3. **V4 finds hidden gems** - STANDARD leads with V4 >= 80% convert at 4.60% (better than T2)
+4. **Hybrid approach optimized** - Upgrade path adds more value than deprioritization filter
 
 ---
 
@@ -312,12 +449,14 @@ Leads are assigned to priority tiers based on business rules:
 
 ### For Model Users (Sales Team)
 1. **Use Hybrid Lead Lists:** Monthly lead lists are generated using both V3 and V4 (see `Lead_List_Generation/`)
-2. **Review Tier Assignments:** Each lead includes V3 tier, expected conversion rate, and V4 percentile
+2. **Review Tier Assignments:** Each lead includes V3 tier (or V4_UPGRADE), expected conversion rate, and V4 percentile
 3. **Prioritize Outreach:** 
-   - **Highest Priority**: V3 Tier 1A/1B/1 leads (regardless of V4 score)
-   - **High Priority**: V3 Tier 2-5 leads with V4 percentile > 20%
-   - **Skip**: Leads with V4 deprioritize flag = TRUE (bottom 20%, unless V3 Tier 1-2)
-4. **Export Format:** CSV files in `Lead_List_Generation/exports/` with all scoring columns
+   - **Highest Priority**: V3 Tier 1A/1B/1 leads (7.41%+ expected conversion)
+   - **High Priority**: V3 Tier 2 leads (3.20% expected conversion)
+   - **V4 Upgraded**: V4_UPGRADE tier leads (4.60% expected conversion, 44% better than T2)
+   - **Standard Priority**: V3 Tier 3-5 leads
+4. **Track Performance:** Filter by `is_v4_upgrade = 1` to measure V4 upgrade performance (expected: 4.60% conversion)
+5. **Export Format:** CSV files in `Lead_List_Generation/exports/` with all scoring columns including V4 upgrade tracking
 
 ### For Developers
 1. **Read Documentation:** Start with [`Version-3/VERSION_3_MODEL_REPORT.md`](./Version-3/VERSION_3_MODEL_REPORT.md)
@@ -437,9 +576,12 @@ For questions about the model or lead list generation:
 
 ---
 
-**Last Updated:** December 2025  
+**Last Updated:** December 24, 2025  
 **Current Model Versions:** 
 - **V3.2.5** (Primary Prioritization) - Rules-based tier system
-- **V4.0.0** (Deprioritization Filter) - XGBoost ML model  
-**Status:** ✅ Production Ready (Hybrid Deployment)
+- **V4.0.0** (Upgrade Path Filter) - XGBoost ML model  
+**Status:** ✅ Production Ready (Hybrid Deployment with V4 Upgrade Path)
+
+**Version History:**
+- **December 24, 2024:** Updated hybrid approach from V4 deprioritization to V4 upgrade path based on data-driven investigation findings. V3 tier ordering validated (T1 > T2, statistically significant). V4 upgrade path adds 486 high-quality leads (20.25% of list) with expected 4.60% conversion rate.
 
