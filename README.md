@@ -34,7 +34,7 @@ The production system uses a **hybrid approach** that combines the strengths of 
 1. **V3 Rules-Based Model** (Primary): Prioritizes leads into tiers (2.0x to 4.3x lift)
 2. **V4 XGBoost Model** (Deprioritization Filter): Identifies bottom 20% of leads to skip (1.33% conversion vs 3.20% baseline)
 
-**How They Work Together (Updated December 2024):**
+**How They Work Together (Updated December 2025):**
 ```
 Lead Scoring Pipeline:
 1. V3 Rules → Assign Tier (T1A, T1B, T1, T2, T3, T4, T5, STANDARD)
@@ -123,18 +123,25 @@ V4 is an XGBoost machine learning model trained on historical lead conversion da
 
 2. **Score with V4 Model** (`scripts/score_prospects_monthly.py`)
    - Load V4 XGBoost model and score all prospects
-   - Calculate percentiles (1-100) and deprioritize flags (bottom 20%)
-   - Output: `ml_features.v4_prospect_scores`
+   - Calculate percentiles (1-100) and identify upgrade candidates (>= 80th percentile)
+   - **Generate SHAP-based narratives** for V4 upgrade candidates
+   - Extract top 3 SHAP features per prospect (feature importance-based)
+   - Output: `ml_features.v4_prospect_scores` with columns:
+     - `v4_score`, `v4_percentile`, `v4_upgrade_candidate`
+     - `shap_top1_feature`, `shap_top1_value`, `shap_top2_feature`, `shap_top2_value`, `shap_top3_feature`, `shap_top3_value`
+     - `v4_narrative` (human-readable explanation for upgrades)
 
 3. **Generate Hybrid Lead List** (`sql/January_2026_Lead_List_V3_V4_Hybrid.sql`)
-   - Apply V3 tier logic to all prospects
+   - Apply V3 tier logic to all prospects with rich narratives
+   - **Exclude specific firms**: Savvy Advisors (CRD 318493) and Ritholtz Wealth Management (CRD 168652)
    - Join V4 scores and upgrade STANDARD leads with V4 >= 80th percentile to V4_UPGRADE tier
+   - **Generate final narratives**: V3 tier narratives OR V4 SHAP-based narratives for upgrades
    - Apply tier quotas and LinkedIn prioritization
    - Output: `ml_features.january_2026_lead_list_v4` (2,400 leads)
 
 4. **Export to CSV** (`scripts/export_lead_list.py`)
    - Export lead list with all V3 and V4 columns
-   - Validate data quality (no duplicates, required fields present)
+   - Validate data quality (no duplicates, required fields present, firm exclusions verified)
    - Output: `exports/january_2026_lead_list_YYYYMMDD.csv`
 
 **Result:**
@@ -142,6 +149,56 @@ V4 is an XGBoost machine learning model trained on historical lead conversion da
 - **486 V4_UPGRADE leads** (20.25% of list, expected 4.60% conversion)
 - **Average V4 percentile: 98.2** (top 2% of prospects)
 - **99.9% LinkedIn coverage** for SDR outreach
+- **100% narrative coverage** - every lead has a human-readable explanation
+- **100% job title coverage** - advisor job titles included for context
+
+### What's in the Lead List?
+
+**Every lead includes:**
+
+1. **Contact Information:**
+   - `first_name`, `last_name`, `email`, `phone`, `linkedin_url`
+   - `job_title` - Advisor's role (e.g., "Wealth Manager", "Financial Advisor")
+
+2. **Scoring & Prioritization:**
+   - `score_tier` - Final tier assignment (T1A, T1B, T1, T2, T3, T4, T5, or V4_UPGRADE)
+   - `original_v3_tier` - Original V3 tier before upgrade (shows "STANDARD" for V4 upgrades)
+   - `expected_rate_pct` - Expected conversion rate (e.g., 7.10% for T1, 4.60% for V4_UPGRADE)
+   - `list_rank` - Overall ranking in the list (1 = highest priority)
+
+3. **Human-Readable Narratives:**
+   - `score_narrative` - Explains why the lead was scored/upgraded:
+     - **V3 Tier Leads**: "James is a CFP holder at ABC Wealth, which has lost 5 advisors (net) in the past year. CFP designation indicates book ownership and client relationships. With 2 years at the firm and 8 years of experience, this is an ULTRA-PRIORITY lead. Tier 1A: 8.7% expected conversion."
+     - **V4 Upgrade Leads**: "V4 Model Upgrade: Sarah at XYZ Advisors identified as high-potential lead (V4 score: 0.70, 99th percentile). Key factors: This advisor is relatively new at their current firm AND has a history of changing firms - a strong signal they may move again. Historical conversion: 4.60% (1.42x baseline). Track as V4 Upgrade."
+
+4. **V4 Machine Learning Data:**
+   - `v4_score` - Raw XGBoost prediction score (0.0-1.0)
+   - `v4_percentile` - Percentile rank (1-100, higher is better)
+   - `is_v4_upgrade` - Flag (1 = upgraded from STANDARD, 0 = V3 tier qualified)
+   - `v4_status` - Description ("V4 Upgrade (STANDARD with V4 >= 80%)" or "V3 Tier Qualified")
+   - `shap_top1_feature`, `shap_top2_feature`, `shap_top3_feature` - Top 3 ML features driving the score (for V4 upgrades)
+
+5. **Firm Information:**
+   - `firm_name`, `firm_crd` - Firm identification
+   - `firm_rep_count` - Number of advisors at firm
+   - `firm_net_change_12mo` - Net advisor change (negative = losing advisors)
+   - `tenure_months`, `tenure_years` - How long advisor has been at current firm
+   - `industry_tenure_years` - Total years in the industry
+
+6. **Certifications & Flags:**
+   - `has_cfp`, `has_series_65_only`, `has_series_7`, `has_cfa` - Professional certifications
+   - `is_hv_wealth_title` - High-value wealth title flag
+   - `prospect_type` - "NEW_PROSPECT" or recyclable lead
+
+**How Narratives Are Generated:**
+
+- **V3 Tier Leads**: Narratives are generated from SQL business rules, explaining the specific criteria that qualified the lead for that tier (e.g., CFP certification, firm bleeding, tenure, etc.)
+
+- **V4 Upgrade Leads**: Narratives are generated from SHAP (SHapley Additive exPlanations) feature importance analysis. The model identifies the top 3 features driving the score, and the narrative explains what those features mean in business terms (e.g., "relatively new at firm AND history of changing firms" for `short_tenure_x_high_mobility`).
+
+**Firm Exclusions Applied:**
+- **Savvy Advisors, Inc.** (CRD 318493) - Internal firm, excluded from all lead lists
+- **Ritholtz Wealth Management** (CRD 168652) - Partner firm, excluded from all lead lists
 
 ---
 
@@ -177,7 +234,7 @@ Lead Scoring/
 │   ├── exports/             # Generated CSV lead lists (gitignored)
 │   └── logs/                # Execution logs
 │
-├── V3+V4_testing/          # ✅ METHODOLOGY INVESTIGATION (December 2024)
+├── V3+V4_testing/          # ✅ METHODOLOGY INVESTIGATION (December 2025)
 │   ├── reports/
 │   │   ├── FINAL_V3_VS_V4_INVESTIGATION_REPORT.md  # Full investigation report
 │   │   └── tier_analysis.md              # Tier performance analysis
@@ -261,7 +318,7 @@ Lead Scoring/
 - **Deployment:** Integrated into monthly lead list generation as upgrade path filter
 - **Hybrid Integration:** Works alongside V3 to upgrade STANDARD tier leads while V3 prioritizes top tiers
 
-**Methodology Evolution (December 2024):**
+**Methodology Evolution (December 2025):**
 - **Initial Approach:** V4 used for deprioritization (filtering bottom 20%)
 - **Updated Approach:** V4 used for upgrade path (promoting STANDARD leads with V4 >= 80%)
 - **Rationale:** Investigation showed V4 deprioritization wasn't adding value (90% of V3 leads already in top 10%)
@@ -273,7 +330,7 @@ Lead Scoring/
 
 ### Data-Driven Investigation (Q1-Q3 2025)
 
-In December 2024, we conducted a rigorous investigation comparing V3 tier rules vs V4 XGBoost model performance on historical lead data to validate our methodology and identify improvement opportunities.
+In December 2025, we conducted a rigorous investigation comparing V3 tier rules vs V4 XGBoost model performance on historical lead data to validate our methodology and identify improvement opportunities.
 
 **Investigation Scope:**
 - **Dataset:** 17,867 historical leads contacted in Q1-Q3 2025
@@ -315,7 +372,7 @@ In December 2024, we conducted a rigorous investigation comparing V3 tier rules 
 
 ### Methodology Changes
 
-#### OLD Hybrid Approach (Deprecated - December 2024)
+#### OLD Hybrid Approach (Deprecated - December 2025)
 
 ```
 Lead Scoring Pipeline (OLD):
@@ -333,7 +390,7 @@ Lead Scoring Pipeline (OLD):
 - 90% of V3-qualified leads already scored in V4's top 10%
 - Filtering bottom 20% didn't improve conversion rates within V3 tiers
 
-#### NEW Hybrid Approach (Current - December 2024)
+#### NEW Hybrid Approach (Current - December 2025)
 
 ```
 Lead Scoring Pipeline (NEW):
@@ -358,6 +415,11 @@ Lead Scoring Pipeline (NEW):
 - **`V4_UPGRADE`**: New tier for STANDARD leads with V4 >= 80th percentile
 - **`original_v3_tier`**: Preserves original V3 tier for analysis (shows "STANDARD" for upgraded leads)
 - **`v4_status`**: Description of V4 status ("V4 Upgrade (STANDARD with V4 >= 80%)" or "V3 Tier Qualified")
+- **`job_title`**: Advisor's job title from FINTRX (e.g., "Wealth Manager", "Financial Advisor")
+- **`score_narrative`**: Human-readable explanation of why the lead was scored/upgraded:
+  - **V3 Tier Leads**: Rich narratives explaining tier criteria (e.g., "James is a CFP holder at ABC Wealth, which has lost 5 advisors...")
+  - **V4 Upgrade Leads**: SHAP-based narratives explaining ML factors (e.g., "Key factors: This advisor is relatively new at their current firm AND has a history of changing firms...")
+- **`shap_top1_feature`**, **`shap_top2_feature`**, **`shap_top3_feature`**: Top 3 ML features driving the V4 score (for V4 upgrades)
 
 **Performance Tracking:**
 - Filter by `is_v4_upgrade = 1` to measure V4 upgrade performance
@@ -366,7 +428,7 @@ Lead Scoring Pipeline (NEW):
 
 ### Files Modified
 
-**Updated Files (December 2024):**
+**Updated Files (December 2025):**
 - **`Lead_List_Generation/sql/January_2026_Lead_List_V3_V4_Hybrid.sql`**
   - Removed: V4 deprioritization filter (`v4_deprioritize = FALSE`)
   - Added: V4 upgrade path logic (STANDARD + V4 >= 80% → V4_UPGRADE tier)
@@ -440,8 +502,15 @@ Leads are assigned to priority tiers based on business rules:
 - `lead_scoring_features_pit` - V3 feature engineering table (37 features)
 - `lead_scores_v3_2_12212025` - V3 production scoring table
 - `v4_prospect_features` - V4 feature engineering table (14 features, all prospects)
-- `v4_prospect_scores` - V4 scoring table (percentiles and deprioritize flags)
-- `january_2026_lead_list_v4` - Generated hybrid lead lists (V3 + V4)
+- `v4_prospect_scores` - V4 scoring table with SHAP data:
+  - Percentiles, upgrade candidates, deprioritize flags
+  - SHAP top features (`shap_top1/2/3_feature`, `shap_top1/2/3_value`)
+  - V4 narratives (`v4_narrative`) for upgrade candidates
+- `january_2026_lead_list_v4` - Generated hybrid lead lists (V3 + V4) with:
+  - V3 tier assignments and narratives
+  - V4 upgrade path (STANDARD → V4_UPGRADE)
+  - Job titles, SHAP features, and combined narratives
+  - Firm exclusions applied (Savvy, Ritholtz)
 
 ---
 
@@ -449,14 +518,28 @@ Leads are assigned to priority tiers based on business rules:
 
 ### For Model Users (Sales Team)
 1. **Use Hybrid Lead Lists:** Monthly lead lists are generated using both V3 and V4 (see `Lead_List_Generation/`)
-2. **Review Tier Assignments:** Each lead includes V3 tier (or V4_UPGRADE), expected conversion rate, and V4 percentile
+2. **Review Tier Assignments:** Each lead includes:
+   - **V3 tier** (or V4_UPGRADE for upgraded leads)
+   - **Expected conversion rate** (percentage)
+   - **V4 percentile** (1-100, higher is better)
+   - **Job title** (advisor's role for context)
+   - **Score narrative** (human-readable explanation of why the lead was scored/upgraded)
+   - **SHAP features** (top 3 ML factors for V4 upgrades)
 3. **Prioritize Outreach:** 
    - **Highest Priority**: V3 Tier 1A/1B/1 leads (7.41%+ expected conversion)
    - **High Priority**: V3 Tier 2 leads (3.20% expected conversion)
    - **V4 Upgraded**: V4_UPGRADE tier leads (4.60% expected conversion, 44% better than T2)
+     - Read the `score_narrative` to understand why they were upgraded (e.g., "relatively new at firm AND history of changing firms")
    - **Standard Priority**: V3 Tier 3-5 leads
-4. **Track Performance:** Filter by `is_v4_upgrade = 1` to measure V4 upgrade performance (expected: 4.60% conversion)
-5. **Export Format:** CSV files in `Lead_List_Generation/exports/` with all scoring columns including V4 upgrade tracking
+4. **Understand Narratives:**
+   - **V3 Tier Leads**: Narratives explain tier criteria (e.g., "CFP holder at firm losing advisors")
+   - **V4 Upgrade Leads**: Narratives explain ML factors (e.g., "new at firm AND history of mobility")
+5. **Track Performance:** Filter by `is_v4_upgrade = 1` to measure V4 upgrade performance (expected: 4.60% conversion)
+6. **Export Format:** CSV files in `Lead_List_Generation/exports/` with all columns:
+   - Contact info: `first_name`, `last_name`, `email`, `phone`, `linkedin_url`, `job_title`
+   - Scoring: `score_tier`, `original_v3_tier`, `expected_rate_pct`, `score_narrative`
+   - V4 data: `v4_score`, `v4_percentile`, `is_v4_upgrade`, `v4_status`, `shap_top1_feature`, `shap_top2_feature`, `shap_top3_feature`
+   - Firm data: `firm_name`, `firm_crd`, `firm_rep_count`, `firm_net_change_12mo`
 
 ### For Developers
 1. **Read Documentation:** Start with [`Version-3/VERSION_3_MODEL_REPORT.md`](./Version-3/VERSION_3_MODEL_REPORT.md)
@@ -481,8 +564,13 @@ Leads are assigned to priority tiers based on business rules:
 
 **Hybrid Lead List Generation:**
 - **Hybrid Query:** [`Lead_List_Generation/sql/January_2026_Lead_List_V3_V4_Hybrid.sql`](./Lead_List_Generation/sql/January_2026_Lead_List_V3_V4_Hybrid.sql)
+  - Includes: V3 tier logic, V4 upgrade path, SHAP narratives, job titles, firm exclusions
+- **V4 Scoring Script:** [`Lead_List_Generation/scripts/score_prospects_monthly.py`](./Lead_List_Generation/scripts/score_prospects_monthly.py)
+  - Generates SHAP-based narratives for V4 upgrade candidates
 - **Export Script:** [`Lead_List_Generation/scripts/export_lead_list.py`](./Lead_List_Generation/scripts/export_lead_list.py)
+  - Exports CSV with all columns including narratives and SHAP features
 - **Process Documentation:** [`Lead_List_Generation/Monthly_Lead_List_Generation_V3_V4_Hybrid.md`](./Lead_List_Generation/Monthly_Lead_List_Generation_V3_V4_Hybrid.md)
+- **Upgrades Guide:** [`Lead_List_Generation/January_2026_Lead_List_Final_Upgrades_Guide.md`](./Lead_List_Generation/January_2026_Lead_List_Final_Upgrades_Guide.md)
 
 ### Documentation
 
@@ -578,10 +666,16 @@ For questions about the model or lead list generation:
 
 **Last Updated:** December 24, 2025  
 **Current Model Versions:** 
-- **V3.2.5** (Primary Prioritization) - Rules-based tier system
-- **V4.0.0** (Upgrade Path Filter) - XGBoost ML model  
-**Status:** ✅ Production Ready (Hybrid Deployment with V4 Upgrade Path)
+- **V3.2.5** (Primary Prioritization) - Rules-based tier system with rich narratives
+- **V4.0.0** (Upgrade Path Filter) - XGBoost ML model with SHAP narratives  
+**Status:** ✅ Production Ready (Hybrid Deployment with V4 Upgrade Path, SHAP Narratives, Job Titles, Firm Exclusions)
 
 **Version History:**
-- **December 24, 2024:** Updated hybrid approach from V4 deprioritization to V4 upgrade path based on data-driven investigation findings. V3 tier ordering validated (T1 > T2, statistically significant). V4 upgrade path adds 486 high-quality leads (20.25% of list) with expected 4.60% conversion rate.
+- **December 24, 2025:** Updated hybrid approach from V4 deprioritization to V4 upgrade path based on data-driven investigation findings. V3 tier ordering validated (T1 > T2, statistically significant). V4 upgrade path adds 486 high-quality leads (20.25% of list) with expected 4.60% conversion rate.
+- **December 24, 2025 (Evening):** Enhanced lead list generation with SHAP narratives, job titles, and firm exclusions:
+  - **SHAP Narratives**: V4 upgrade leads now include personalized explanations (e.g., "relatively new at firm AND history of changing firms")
+  - **Job Titles**: Added `job_title` column from FINTRX for SDR context
+  - **Firm Exclusions**: Excluded Savvy Advisors (CRD 318493) and Ritholtz Wealth Management (CRD 168652)
+  - **Narrative Coverage**: 100% of leads have human-readable explanations (V3 tier narratives or V4 SHAP narratives)
+  - **SHAP Features**: Top 3 ML features included for V4 upgrades (`shap_top1/2/3_feature`)
 
