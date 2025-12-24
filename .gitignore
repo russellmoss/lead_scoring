@@ -164,6 +164,10 @@ Broker_protocol/data/
 discovery_data/
 FinTrx data/
 
+# Big datasets / vendor feeds (explicit)
+**/discovery_data/
+Broker_protocol/experiments/output/
+
 # But keep directory structure files
 !Broker_protocol/output/.gitkeep
 !Broker_protocol/temp/.gitkeep
