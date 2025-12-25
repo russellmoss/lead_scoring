@@ -152,6 +152,121 @@ V4 is an XGBoost machine learning model trained on historical lead conversion da
 - **100% narrative coverage** - every lead has a human-readable explanation
 - **100% job title coverage** - advisor job titles included for context
 
+---
+
+### Recyclable Lead List Generation (Unified Scoring System)
+
+**Purpose:** Generate a monthly list of 600 previously-contacted leads/opportunities that are ready for re-engagement, using a unified scoring system that combines V3 tier signals, V4 ML predictions, and recycling-specific factors.
+
+**Process:** [`Lead_List_Generation/scripts/recycling/generate_recyclable_list_v2.1.py`](./Lead_List_Generation/scripts/recycling/generate_recyclable_list_v2.1.py)
+
+**How It Works:**
+
+The recyclable lead list system identifies leads and opportunities that were previously contacted but didn't convert, and determines which ones are most likely to convert on re-engagement. The system uses a **unified scoring approach** that combines multiple signals into a single score for easy prioritization.
+
+**Key Insight - Firm Change Logic:**
+- **WRONG (V1)**: Prioritized people who recently changed firms as "hot leads"
+- **CORRECT (V2)**: People who **just changed firms (< 2 years)** are **EXCLUDED** - they just settled in and won't move again soon
+- **INCLUDE**: People who changed firms 2+ years ago (proven movers, may be getting restless)
+
+**Unified Scoring System (V2.2):**
+
+Each recyclable lead receives a single `recyclable_score` that combines:
+
+1. **V4 ML Score** (0-100 pts) - Base score from machine learning prediction
+2. **V3 Tier Boost** (0-35 pts) - Based on historical conversion rates:
+   - TIER_1A_PRIME_MOVER_CFP: +35 pts
+   - TIER_1B_PRIME_MOVER_SERIES65: +35 pts
+   - TIER_1_PRIME_MOVER: +30 pts
+   - TIER_1F_HV_WEALTH_BLEEDER: +28 pts
+   - TIER_4_EXPERIENCED_MOVER: +22 pts
+   - TIER_2_PROVEN_MOVER: +20 pts
+   - TIER_3_MODERATE_BLEEDER: +18 pts
+   - TIER_5_HEAVY_BLEEDER: +12 pts
+   - STANDARD: +0 pts
+3. **Timing Boost** (+15 pts) - Previously said "timing was bad" (high re-engagement potential)
+4. **Opportunity Boost** (+10 pts) - Warmer than lead (previously engaged as opportunity)
+5. **Optimal Window** (+10 pts) - 180-365 days since last contact (sweet spot for re-engagement)
+6. **Bleeding Firm** (+8 pts) - Currently at unstable firm (high movement signal)
+
+**Score Range:** Typically 129-165 points  
+**Expected Conversions:** Score-to-conversion mapping:
+- Score 50 (baseline) → 3.2% conversion
+- Score 100 → 6.0% conversion
+- Score 135+ → 10.0%+ conversion
+
+**Step-by-Step Process:**
+
+1. **Query Recyclable Pool** (`sql/recycling/recyclable_pool_master_v2.1.sql`)
+   - Identifies closed/lost leads and opportunities from Salesforce
+   - Excludes recent firm changers (< 2 years)
+   - Excludes no-go dispositions and DoNotCall records
+   - Excludes recently contacted (< 90 days)
+   - Joins with FINTRX current data for V3 tier calculation
+   - Joins with V4 scores for ML predictions
+   - Calculates unified `recyclable_score` for each record
+   - Ranks by score (highest first) and selects top 600
+
+2. **Generate Narratives** (`generate_narrative()` function)
+   - Creates clear, concise narratives explaining why each lead is being recycled
+   - Includes: record type, key signals (V3 tier, V4 percentile, timing, bleeding firm), previous contact info, score and expected conversion
+
+3. **Calculate Expected Conversions** (`estimate_conversion_rate()` function)
+   - Converts unified score to expected conversion percentage
+   - Uses calibrated mapping based on historical data
+
+4. **Export to CSV** (`exports/[MONTH]_[YEAR]_recyclable_leads.csv`)
+   - Includes all contact information, scoring data, narratives, and expected conversions
+
+5. **Generate Report** (`reports/recycling_analysis/[MONTH]_[YEAR]_recyclable_list_report.md`)
+   - Score distribution statistics
+   - Breakdown by record type (Opportunity vs Lead)
+   - V3 tier distribution with average scores
+   - Score buckets analysis
+   - Expected conversion summary
+
+**Usage:**
+
+```bash
+cd "C:\Users\russe\Documents\Lead Scoring\Lead_List_Generation"
+python scripts/recycling/generate_recyclable_list_v2.1.py --month january --year 2026
+```
+
+**Output Files:**
+- **CSV Export**: `exports/january_2026_recyclable_leads.csv` (600 leads)
+- **Report**: `reports/recycling_analysis/january_2026_recyclable_list_report.md`
+
+**What's in the Recyclable List:**
+
+Each lead includes:
+- **Contact Information**: `first_name`, `last_name`, `email`, `phone`, `linkedin_url`, `current_firm`
+- **Unified Scoring**: `recyclable_score` (129-165 range), `expected_conv_pct` (calculated from score)
+- **V3 Tier Data**: `v3_tier`, `v3_tier_rank`, `at_bleeding_firm`, `has_cfp`, `previous_firm_count`, `v3_tier_narrative`
+- **V4 ML Data**: `v4_score`, `v4_percentile`, `v4_shap_narrative`, `shap_top1_feature`, `shap_top2_feature`, `shap_top3_feature`
+- **Recycling Context**: `close_reason`, `close_date`, `days_since_last_contact`, `last_contacted_by`, `recycle_narrative`
+- **Firm Change Analysis**: `changed_firms_since_close`, `years_at_current_firm`, `years_at_current_firm_now`
+
+**Key Features:**
+
+1. **Unified Scoring**: Single score combines all signals for easy prioritization (no complex P1-P6 tiers)
+2. **V3 Integration**: Uses same V3 tier logic as Provided Lead List for consistency
+3. **V4 Integration**: Leverages ML predictions to identify high-potential recyclable leads
+4. **Smart Exclusions**: Automatically excludes recent firm changers and no-go dispositions
+5. **Comprehensive Narratives**: Every lead includes explanation of why it's being recycled
+6. **Expected Conversions**: Score-to-conversion mapping provides realistic expectations
+
+**Performance:**
+
+- **Score Range**: 129-165 (January 2026)
+- **Average Score**: 135.6
+- **Expected Conversions**: ~59.5 conversions (9.9% avg rate)
+- **Top Performers**: Score 165+ leads have 11.5%+ expected conversion
+
+**Documentation:**
+- **Process Guide**: [`Lead_List_Generation/Monthly_Recyclable_Lead_List_Generation_Guide_V2.md`](./Lead_List_Generation/Monthly_Recyclable_Lead_List_Generation_Guide_V2.md)
+- **SQL Query**: [`Lead_List_Generation/sql/recycling/recyclable_pool_master_v2.1.sql`](./Lead_List_Generation/sql/recycling/recyclable_pool_master_v2.1.sql)
+- **Python Script**: [`Lead_List_Generation/scripts/recycling/generate_recyclable_list_v2.1.py`](./Lead_List_Generation/scripts/recycling/generate_recyclable_list_v2.1.py)
+
 ### What's in the Lead List?
 
 **Every lead includes:**
@@ -225,13 +340,21 @@ Lead Scoring/
 │
 ├── Lead_List_Generation/   # ✅ HYBRID LEAD LIST GENERATION (V3 + V4)
 │   ├── Monthly_Lead_List_Generation_V3_V4_Hybrid.md  # Process documentation
+│   ├── Monthly_Recyclable_Lead_List_Generation_Guide_V2.md  # Recyclable list guide
 │   ├── sql/
 │   │   ├── v4_prospect_features.sql      # V4 features for all prospects
-│   │   └── January_2026_Lead_List_V3_V4_Hybrid.sql  # Hybrid query
+│   │   ├── January_2026_Lead_List_V3_V4_Hybrid.sql  # Hybrid query
+│   │   └── recycling/
+│   │       └── recyclable_pool_master_v2.1.sql  # Recyclable lead query (unified scoring)
 │   ├── scripts/
 │   │   ├── score_prospects_monthly.py    # V4 scoring script
-│   │   └── export_lead_list.py           # CSV export script
+│   │   ├── export_lead_list.py           # CSV export script
+│   │   └── recycling/
+│   │       ├── generate_recyclable_list_v2.1.py  # Recyclable list generator
+│   │       └── test_recyclable_query.py  # Query testing script
 │   ├── exports/             # Generated CSV lead lists (gitignored)
+│   ├── reports/
+│   │   └── recycling_analysis/  # Recyclable list reports
 │   └── logs/                # Execution logs
 │
 ├── V3+V4_testing/          # ✅ METHODOLOGY INVESTIGATION (December 2025)
@@ -664,11 +787,11 @@ For questions about the model or lead list generation:
 
 ---
 
-**Last Updated:** December 24, 2025  
+**Last Updated:** December 25, 2025  
 **Current Model Versions:** 
 - **V3.2.5** (Primary Prioritization) - Rules-based tier system with rich narratives
 - **V4.0.0** (Upgrade Path Filter) - XGBoost ML model with SHAP narratives  
-**Status:** ✅ Production Ready (Hybrid Deployment with V4 Upgrade Path, SHAP Narratives, Job Titles, Firm Exclusions)
+**Status:** ✅ Production Ready (Hybrid Deployment with V4 Upgrade Path, SHAP Narratives, Job Titles, Firm Exclusions, Recyclable Lead Lists)
 
 **Version History:**
 - **December 24, 2025:** Updated hybrid approach from V4 deprioritization to V4 upgrade path based on data-driven investigation findings. V3 tier ordering validated (T1 > T2, statistically significant). V4 upgrade path adds 486 high-quality leads (20.25% of list) with expected 4.60% conversion rate.
@@ -678,4 +801,12 @@ For questions about the model or lead list generation:
   - **Firm Exclusions**: Excluded Savvy Advisors (CRD 318493) and Ritholtz Wealth Management (CRD 168652)
   - **Narrative Coverage**: 100% of leads have human-readable explanations (V3 tier narratives or V4 SHAP narratives)
   - **SHAP Features**: Top 3 ML features included for V4 upgrades (`shap_top1/2/3_feature`)
+- **December 25, 2025:** Implemented Recyclable Lead List Generation system with unified scoring:
+  - **Unified Scoring**: Replaced P1-P6 priority tiers with single `recyclable_score` (129-165 range) combining V3 tier signals, V4 ML predictions, timing indicators, and recycling-specific factors
+  - **V3 Integration**: Recyclable list uses same V3 tier logic as Provided Lead List for consistency
+  - **V4 Integration**: Leverages V4 ML scores and SHAP narratives for recyclable leads
+  - **Smart Exclusions**: Automatically excludes recent firm changers (< 2 years) and no-go dispositions
+  - **Comprehensive Narratives**: Every recyclable lead includes explanation of why it's being recycled
+  - **Expected Conversions**: Score-to-conversion mapping (9.9% avg rate, 59.5 expected conversions per 600 leads)
+  - **Files**: `sql/recycling/recyclable_pool_master_v2.1.sql` (unified scoring query), `scripts/recycling/generate_recyclable_list_v2.1.py` (generation script)
 
